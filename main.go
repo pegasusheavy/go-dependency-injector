@@ -67,14 +67,17 @@ type ConsoleLogger struct {
 	prefix string
 }
 
+// NewConsoleLogger creates a new console logger.
 func NewConsoleLogger() Logger {
 	return &ConsoleLogger{prefix: "[APP]"}
 }
 
+// Log outputs an info message to stdout.
 func (l *ConsoleLogger) Log(message string) {
 	fmt.Printf("%s %s INFO: %s\n", l.prefix, time.Now().Format("15:04:05"), message)
 }
 
+// LogError outputs an error message to stdout.
 func (l *ConsoleLogger) LogError(message string) {
 	fmt.Printf("%s %s ERROR: %s\n", l.prefix, time.Now().Format("15:04:05"), message)
 }
@@ -85,6 +88,7 @@ type AppConfig struct {
 	cacheEnabled bool
 }
 
+// NewAppConfig creates a new application configuration.
 func NewAppConfig() Config {
 	return &AppConfig{
 		dbURL:        "postgres://localhost:5432/myapp",
@@ -92,8 +96,11 @@ func NewAppConfig() Config {
 	}
 }
 
+// DatabaseURL returns the database connection URL.
 func (c *AppConfig) DatabaseURL() string { return c.dbURL }
-func (c *AppConfig) CacheEnabled() bool  { return c.cacheEnabled }
+
+// CacheEnabled returns whether caching is enabled.
+func (c *AppConfig) CacheEnabled() bool { return c.cacheEnabled }
 
 // PostgresDatabase simulates a postgres connection.
 type PostgresDatabase struct {
@@ -101,11 +108,13 @@ type PostgresDatabase struct {
 	config Config
 }
 
+// NewPostgresDatabase creates a new database connection.
 func NewPostgresDatabase(logger Logger, config Config) (Database, error) {
 	logger.Log(fmt.Sprintf("Connecting to database: %s", config.DatabaseURL()))
 	return &PostgresDatabase{logger: logger, config: config}, nil
 }
 
+// Query executes a SQL query and returns results.
 func (db *PostgresDatabase) Query(sql string) ([]map[string]any, error) {
 	db.logger.Log(fmt.Sprintf("Executing query: %s", sql))
 	// Simulated query result
@@ -115,6 +124,7 @@ func (db *PostgresDatabase) Query(sql string) ([]map[string]any, error) {
 	}, nil
 }
 
+// Close closes the database connection.
 func (db *PostgresDatabase) Close() error {
 	db.logger.Log("Closing database connection")
 	return nil
@@ -126,6 +136,7 @@ type InMemoryCache struct {
 	data   map[string]any
 }
 
+// NewInMemoryCache creates a new in-memory cache.
 func NewInMemoryCache(logger Logger) Cache {
 	logger.Log("Initializing in-memory cache")
 	return &InMemoryCache{
@@ -134,11 +145,13 @@ func NewInMemoryCache(logger Logger) Cache {
 	}
 }
 
+// Get retrieves a value from the cache.
 func (c *InMemoryCache) Get(key string) (any, bool) {
 	val, ok := c.data[key]
 	return val, ok
 }
 
+// Set stores a value in the cache with the given TTL.
 func (c *InMemoryCache) Set(key string, value any, ttl time.Duration) {
 	c.data[key] = value
 }
@@ -150,11 +163,13 @@ type DefaultUserRepository struct {
 	logger Logger
 }
 
+// NewUserRepository creates a new user repository.
 func NewUserRepository(db Database, cache Cache, logger Logger) UserRepository {
 	logger.Log("Creating user repository")
 	return &DefaultUserRepository{db: db, cache: cache, logger: logger}
 }
 
+// FindByID finds a user by their ID.
 func (r *DefaultUserRepository) FindByID(id int) (*User, error) {
 	cacheKey := fmt.Sprintf("user:%d", id)
 
@@ -184,6 +199,7 @@ func (r *DefaultUserRepository) FindByID(id int) (*User, error) {
 	return user, nil
 }
 
+// FindAll retrieves all users from the database.
 func (r *DefaultUserRepository) FindAll() ([]*User, error) {
 	results, err := r.db.Query("SELECT * FROM users")
 	if err != nil {
@@ -207,16 +223,19 @@ type DefaultUserService struct {
 	logger Logger
 }
 
+// NewUserService creates a new user service.
 func NewUserService(repo UserRepository, logger Logger) UserService {
 	logger.Log("Creating user service")
 	return &DefaultUserService{repo: repo, logger: logger}
 }
 
+// GetUser retrieves a user by their ID.
 func (s *DefaultUserService) GetUser(id int) (*User, error) {
 	s.logger.Log(fmt.Sprintf("Getting user %d", id))
 	return s.repo.FindByID(id)
 }
 
+// ListUsers retrieves all users.
 func (s *DefaultUserService) ListUsers() ([]*User, error) {
 	s.logger.Log("Listing all users")
 	return s.repo.FindAll()
@@ -333,17 +352,29 @@ type RequestContext struct {
 
 func demonstrateScopedResolution(c *di.Container) {
 	// Register a scoped dependency
-	di.Register[*RequestContext](c, func() *RequestContext {
+	err := di.Register[*RequestContext](c, func() *RequestContext {
 		return &RequestContext{
 			RequestID: fmt.Sprintf("req-%d", time.Now().UnixNano()),
 			StartTime: time.Now(),
 		}
 	}, di.AsScoped())
+	if err != nil {
+		fmt.Printf("Failed to register RequestContext: %v\n", err)
+		return
+	}
 
 	// Create a scope for "request 1"
 	scope1 := c.CreateScope("request-1")
-	ctx1a, _ := di.ResolveInScope[*RequestContext](c, scope1)
-	ctx1b, _ := di.ResolveInScope[*RequestContext](c, scope1)
+	ctx1a, err := di.ResolveInScope[*RequestContext](c, scope1)
+	if err != nil {
+		fmt.Printf("Failed to resolve context: %v\n", err)
+		return
+	}
+	ctx1b, err := di.ResolveInScope[*RequestContext](c, scope1)
+	if err != nil {
+		fmt.Printf("Failed to resolve context: %v\n", err)
+		return
+	}
 
 	fmt.Printf("  Scope 'request-1' context A: %s\n", ctx1a.RequestID)
 	fmt.Printf("  Scope 'request-1' context B: %s\n", ctx1b.RequestID)
@@ -351,7 +382,11 @@ func demonstrateScopedResolution(c *di.Container) {
 
 	// Create a different scope for "request 2"
 	scope2 := c.CreateScope("request-2")
-	ctx2, _ := di.ResolveInScope[*RequestContext](c, scope2)
+	ctx2, err := di.ResolveInScope[*RequestContext](c, scope2)
+	if err != nil {
+		fmt.Printf("Failed to resolve context: %v\n", err)
+		return
+	}
 
 	fmt.Printf("\n  Scope 'request-2' context: %s\n", ctx2.RequestID)
 	fmt.Printf("  Different from request-1? %v\n", ctx1a.RequestID != ctx2.RequestID)

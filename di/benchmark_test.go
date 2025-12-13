@@ -436,5 +436,3 @@ func BenchmarkResolveFromLargeContainer(b *testing.B) {
 		_, _ = di.Resolve[BenchLogger](c)
 	}
 }
-
-
