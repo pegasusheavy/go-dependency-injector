@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Go Dependency Injector — Type-Safe DI for Go</title>
+    <meta name="description" content="A lightweight, type-safe dependency injection container for Go with generics support.">
+    
+    <!-- Tailwind CSS 4 -->
+    <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        display: ['Instrument Serif', 'Georgia', 'serif'],
+                        mono: ['JetBrains Mono', 'Fira Code', 'monospace'],
+                        sans: ['Satoshi', 'system-ui', 'sans-serif'],
+                    },
+                    colors: {
+                        ink: '#0a0a0a',
+                        paper: '#faf9f7',
+                        accent: '#00ADD8', // Go blue
+                        coral: '#CE3262', // Go pink
+                        sage: '#5DC9A3',
+                    },
+                    animation: {
+                        'fade-up': 'fadeUp 0.6s ease-out forwards',
+                        'fade-in': 'fadeIn 0.8s ease-out forwards',
+                        'slide-in': 'slideIn 0.5s ease-out forwards',
+                    },
+                }
+            }
+        }
+    </script>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700&display=swap" rel="stylesheet">
+    
+    <style>
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-10px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        
+        .stagger-1 { animation-delay: 0.1s; }
+        .stagger-2 { animation-delay: 0.2s; }
+        .stagger-3 { animation-delay: 0.3s; }
+        .stagger-4 { animation-delay: 0.4s; }
+        .stagger-5 { animation-delay: 0.5s; }
+        
+        .code-block {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+        }
+        
+        .gopher-gradient {
+            background: linear-gradient(135deg, #00ADD8 0%, #5DC9A3 50%, #CE3262 100%);
+        }
+        
+        .feature-card {
+            background: linear-gradient(145deg, rgba(255,255,255,0.9) 0%, rgba(250,249,247,0.95) 100%);
+            backdrop-filter: blur(10px);
+        }
+        
+        .hero-pattern {
+            background-color: #faf9f7;
+            background-image: 
+                radial-gradient(circle at 20% 50%, rgba(0, 173, 216, 0.08) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(206, 50, 98, 0.06) 0%, transparent 40%),
+                radial-gradient(circle at 60% 80%, rgba(93, 201, 163, 0.08) 0%, transparent 45%);
+        }
+        
+        pre code {
+            font-family: 'JetBrains Mono', monospace;
+        }
+        
+        .copy-btn:hover {
+            transform: scale(1.05);
+        }
+        
+        .nav-blur {
+            backdrop-filter: saturate(180%) blur(20px);
+            background: rgba(250, 249, 247, 0.8);
+        }
+    </style>
+</head>
+<body class="font-sans text-ink bg-paper antialiased">
+    <!-- Navigation -->
+    <nav class="fixed top-0 left-0 right-0 z-50 nav-blur border-b border-ink/5">
+        <div class="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
+            <a href="#" class="flex items-center gap-3 group">
+                <div class="w-8 h-8 rounded-lg gopher-gradient flex items-center justify-center">
+                    <span class="text-white font-bold text-sm">DI</span>
+                </div>
+                <span class="font-display text-xl">go-dependency-injector</span>
+            </a>
+            <div class="flex items-center gap-6">
+                <a href="#features" class="text-sm text-ink/60 hover:text-ink transition-colors">Features</a>
+                <a href="#quickstart" class="text-sm text-ink/60 hover:text-ink transition-colors">Quick Start</a>
+                <a href="#api" class="text-sm text-ink/60 hover:text-ink transition-colors">API</a>
+                <a href="https://github.com/pegasusheavy/go-dependency-injector" 
+                   class="flex items-center gap-2 px-4 py-2 bg-ink text-paper rounded-full text-sm font-medium hover:bg-ink/80 transition-colors">
+                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+                    GitHub
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero-pattern min-h-screen flex items-center pt-20">
+        <div class="max-w-6xl mx-auto px-6 py-20">
+            <div class="grid lg:grid-cols-2 gap-16 items-center">
+                <div class="opacity-0 animate-fade-up">
+                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-accent/10 text-accent text-sm font-medium mb-6">
+                        <span class="w-2 h-2 rounded-full bg-accent animate-pulse"></span>
+                        Go 1.22+ with Generics
+                    </div>
+                    
+                    <h1 class="font-display text-5xl lg:text-7xl leading-[1.1] mb-6">
+                        Dependency Injection,<br>
+                        <span class="italic text-accent">done right.</span>
+                    </h1>
+                    
+                    <p class="text-xl text-ink/60 leading-relaxed mb-8 max-w-lg">
+                        A lightweight, type-safe DI container for Go. Leverage generics for compile-time safety with a clean, intuitive API.
+                    </p>
+                    
+                    <div class="flex flex-wrap gap-4">
+                        <a href="#quickstart" class="px-6 py-3 bg-ink text-paper rounded-full font-medium hover:bg-ink/80 transition-all hover:scale-105">
+                            Get Started →
+                        </a>
+                        <button onclick="copyInstall()" class="copy-btn px-6 py-3 border border-ink/20 rounded-full font-mono text-sm hover:border-ink/40 transition-all flex items-center gap-2">
+                            <span id="install-text">go get github.com/pegasusheavy/go-dependency-injector</span>
+                            <svg class="w-4 h-4 text-ink/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="opacity-0 animate-fade-up stagger-2">
+                    <div class="code-block rounded-2xl p-6 shadow-2xl shadow-ink/10">
+                        <div class="flex items-center gap-2 mb-4">
+                            <div class="w-3 h-3 rounded-full bg-coral/80"></div>
+                            <div class="w-3 h-3 rounded-full bg-yellow-400/80"></div>
+                            <div class="w-3 h-3 rounded-full bg-sage/80"></div>
+                            <span class="ml-2 text-white/30 text-xs font-mono">main.go</span>
+                        </div>
+                        <pre class="text-sm leading-relaxed overflow-x-auto"><code class="text-gray-300"><span class="text-coral">container</span> := <span class="text-accent">di</span>.<span class="text-sage">New</span>()
+
+<span class="text-white/40">// Register with auto-resolved dependencies</span>
+<span class="text-accent">di</span>.<span class="text-sage">Register</span>[<span class="text-coral">UserService</span>](container, 
+    <span class="text-purple-400">func</span>(db <span class="text-coral">Database</span>, log <span class="text-coral">Logger</span>) <span class="text-coral">UserService</span> {
+        <span class="text-purple-400">return</span> &DefaultUserService{db, log}
+    },
+    <span class="text-accent">di</span>.<span class="text-sage">AsSingleton</span>(),
+)
+
+<span class="text-white/40">// Resolve — all dependencies injected!</span>
+<span class="text-coral">service</span> := <span class="text-accent">di</span>.<span class="text-sage">MustResolve</span>[<span class="text-coral">UserService</span>](container)</code></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="py-32 bg-white">
+        <div class="max-w-6xl mx-auto px-6">
+            <div class="text-center mb-16 opacity-0 animate-fade-up">
+                <h2 class="font-display text-4xl lg:text-5xl mb-4">
+                    Everything you need,<br>
+                    <span class="italic text-ink/40">nothing you don't.</span>
+                </h2>
+            </div>
+            
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Feature 1 -->
+                <div class="feature-card p-8 rounded-2xl border border-ink/5 opacity-0 animate-fade-up stagger-1">
+                    <div class="w-12 h-12 rounded-xl bg-accent/10 flex items-center justify-center mb-5">
+                        <svg class="w-6 h-6 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+                        </svg>
+                    </div>
+                    <h3 class="font-display text-xl mb-2">Type-Safe Generics</h3>
+                    <p class="text-ink/60 leading-relaxed">Compile-time type checking with <code class="font-mono text-sm bg-ink/5 px-1.5 py-0.5 rounded">Register[T]()</code> and <code class="font-mono text-sm bg-ink/5 px-1.5 py-0.5 rounded">Resolve[T]()</code>. No runtime type assertions.</p>
+                </div>
+                
+                <!-- Feature 2 -->
+                <div class="feature-card p-8 rounded-2xl border border-ink/5 opacity-0 animate-fade-up stagger-2">
+                    <div class="w-12 h-12 rounded-xl bg-coral/10 flex items-center justify-center mb-5">
+                        <svg class="w-6 h-6 text-coral" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                        </svg>
+                    </div>
+                    <h3 class="font-display text-xl mb-2">Flexible Lifetimes</h3>
+                    <p class="text-ink/60 leading-relaxed">Transient, Singleton, or Scoped. Control exactly how long your dependencies live and when they're created.</p>
+                </div>
+                
+                <!-- Feature 3 -->
+                <div class="feature-card p-8 rounded-2xl border border-ink/5 opacity-0 animate-fade-up stagger-3">
+                    <div class="w-12 h-12 rounded-xl bg-sage/10 flex items-center justify-center mb-5">
+                        <svg class="w-6 h-6 text-sage" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                        </svg>
+                    </div>
+                    <h3 class="font-display text-xl mb-2">Auto Resolution</h3>
+                    <p class="text-ink/60 leading-relaxed">Factory parameters are automatically resolved. Just declare what you need and let the container handle wiring.</p>
+                </div>
+                
+                <!-- Feature 4 -->
+                <div class="feature-card p-8 rounded-2xl border border-ink/5 opacity-0 animate-fade-up stagger-4">
+                    <div class="w-12 h-12 rounded-xl bg-purple-500/10 flex items-center justify-center mb-5">
+                        <svg class="w-6 h-6 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                        </svg>
+                    </div>
+                    <h3 class="font-display text-xl mb-2">Circular Detection</h3>
+                    <p class="text-ink/60 leading-relaxed">Automatically detects circular dependencies and fails fast with clear, actionable error messages.</p>
+                </div>
+                
+                <!-- Feature 5 -->
+                <div class="feature-card p-8 rounded-2xl border border-ink/5 opacity-0 animate-fade-up stagger-5">
+                    <div class="w-12 h-12 rounded-xl bg-amber-500/10 flex items-center justify-center mb-5">
+                        <svg class="w-6 h-6 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/>
+                        </svg>
+                    </div>
+                    <h3 class="font-display text-xl mb-2">Named Registrations</h3>
+                    <p class="text-ink/60 leading-relaxed">Register multiple implementations of the same interface with names. Perfect for strategy patterns.</p>
+                </div>
+                
+                <!-- Feature 6 -->
+                <div class="feature-card p-8 rounded-2xl border border-ink/5 opacity-0 animate-fade-up stagger-5">
+                    <div class="w-12 h-12 rounded-xl bg-ink/5 flex items-center justify-center mb-5">
+                        <svg class="w-6 h-6 text-ink/60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                        </svg>
+                    </div>
+                    <h3 class="font-display text-xl mb-2">Thread Safe</h3>
+                    <p class="text-ink/60 leading-relaxed">Fully concurrent. Register and resolve from multiple goroutines without worry.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Quick Start Section -->
+    <section id="quickstart" class="py-32 hero-pattern">
+        <div class="max-w-4xl mx-auto px-6">
+            <div class="text-center mb-16">
+                <h2 class="font-display text-4xl lg:text-5xl mb-4">Quick Start</h2>
+                <p class="text-xl text-ink/60">Up and running in under a minute</p>
+            </div>
+            
+            <div class="space-y-8">
+                <!-- Step 1 -->
+                <div class="flex gap-6 items-start">
+                    <div class="w-10 h-10 rounded-full bg-accent text-white flex items-center justify-center font-bold shrink-0">1</div>
+                    <div class="flex-1">
+                        <h3 class="font-display text-xl mb-3">Install the package</h3>
+                        <div class="code-block rounded-xl p-4">
+                            <code class="text-sage font-mono">go get github.com/pegasusheavy/go-dependency-injector</code>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Step 2 -->
+                <div class="flex gap-6 items-start">
+                    <div class="w-10 h-10 rounded-full bg-coral text-white flex items-center justify-center font-bold shrink-0">2</div>
+                    <div class="flex-1">
+                        <h3 class="font-display text-xl mb-3">Create a container and register dependencies</h3>
+                        <div class="code-block rounded-xl p-5 overflow-x-auto">
+                            <pre><code class="text-gray-300 text-sm font-mono"><span class="text-purple-400">import</span> <span class="text-sage">"github.com/pegasusheavy/go-dependency-injector/di"</span>
+
+<span class="text-coral">container</span> := <span class="text-accent">di</span>.<span class="text-sage">New</span>()
+
+<span class="text-white/40">// Register a singleton logger</span>
+<span class="text-accent">di</span>.<span class="text-sage">Register</span>[<span class="text-coral">Logger</span>](container, <span class="text-purple-400">func</span>() <span class="text-coral">Logger</span> {
+    <span class="text-purple-400">return</span> &ConsoleLogger{}
+}, <span class="text-accent">di</span>.<span class="text-sage">AsSingleton</span>())
+
+<span class="text-white/40">// Register with auto-resolved dependencies</span>
+<span class="text-accent">di</span>.<span class="text-sage">Register</span>[<span class="text-coral">UserService</span>](container, <span class="text-purple-400">func</span>(log <span class="text-coral">Logger</span>) <span class="text-coral">UserService</span> {
+    <span class="text-purple-400">return</span> &DefaultUserService{logger: log}
+})</code></pre>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Step 3 -->
+                <div class="flex gap-6 items-start">
+                    <div class="w-10 h-10 rounded-full bg-sage text-white flex items-center justify-center font-bold shrink-0">3</div>
+                    <div class="flex-1">
+                        <h3 class="font-display text-xl mb-3">Resolve and use</h3>
+                        <div class="code-block rounded-xl p-5 overflow-x-auto">
+                            <pre><code class="text-gray-300 text-sm font-mono"><span class="text-white/40">// Resolve with error handling</span>
+<span class="text-coral">service</span>, <span class="text-coral">err</span> := <span class="text-accent">di</span>.<span class="text-sage">Resolve</span>[<span class="text-coral">UserService</span>](container)
+<span class="text-purple-400">if</span> err != <span class="text-purple-400">nil</span> {
+    log.<span class="text-sage">Fatal</span>(err)
+}
+
+<span class="text-white/40">// Or use MustResolve for known registrations</span>
+<span class="text-coral">service</span> := <span class="text-accent">di</span>.<span class="text-sage">MustResolve</span>[<span class="text-coral">UserService</span>](container)
+service.<span class="text-sage">DoSomething</span>()</code></pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- API Section -->
+    <section id="api" class="py-32 bg-white">
+        <div class="max-w-6xl mx-auto px-6">
+            <div class="text-center mb-16">
+                <h2 class="font-display text-4xl lg:text-5xl mb-4">API Reference</h2>
+                <p class="text-xl text-ink/60">Everything at a glance</p>
+            </div>
+            
+            <div class="grid lg:grid-cols-2 gap-8">
+                <!-- Registration -->
+                <div class="bg-paper rounded-2xl p-8 border border-ink/5">
+                    <h3 class="font-display text-2xl mb-6 flex items-center gap-3">
+                        <span class="w-8 h-8 rounded-lg bg-accent/10 flex items-center justify-center text-accent text-sm">R</span>
+                        Registration
+                    </h3>
+                    <div class="space-y-4 font-mono text-sm">
+                        <div class="p-3 bg-white rounded-lg border border-ink/5">
+                            <code class="text-accent">Register[T]</code><span class="text-ink/40">(c, factory, opts...)</span>
+                            <p class="text-ink/60 font-sans mt-1 text-xs">Register with factory function</p>
+                        </div>
+                        <div class="p-3 bg-white rounded-lg border border-ink/5">
+                            <code class="text-accent">RegisterInstance[T]</code><span class="text-ink/40">(c, instance)</span>
+                            <p class="text-ink/60 font-sans mt-1 text-xs">Register existing instance</p>
+                        </div>
+                        <div class="p-3 bg-white rounded-lg border border-ink/5">
+                            <code class="text-accent">RegisterType[I, T]</code><span class="text-ink/40">(c, opts...)</span>
+                            <p class="text-ink/60 font-sans mt-1 text-xs">Register interface → implementation</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Resolution -->
+                <div class="bg-paper rounded-2xl p-8 border border-ink/5">
+                    <h3 class="font-display text-2xl mb-6 flex items-center gap-3">
+                        <span class="w-8 h-8 rounded-lg bg-coral/10 flex items-center justify-center text-coral text-sm">R</span>
+                        Resolution
+                    </h3>
+                    <div class="space-y-4 font-mono text-sm">
+                        <div class="p-3 bg-white rounded-lg border border-ink/5">
+                            <code class="text-coral">Resolve[T]</code><span class="text-ink/40">(c) → (T, error)</span>
+                            <p class="text-ink/60 font-sans mt-1 text-xs">Resolve with error handling</p>
+                        </div>
+                        <div class="p-3 bg-white rounded-lg border border-ink/5">
+                            <code class="text-coral">MustResolve[T]</code><span class="text-ink/40">(c) → T</span>
+                            <p class="text-ink/60 font-sans mt-1 text-xs">Resolve or panic</p>
+                        </div>
+                        <div class="p-3 bg-white rounded-lg border border-ink/5">
+                            <code class="text-coral">ResolveNamed[T]</code><span class="text-ink/40">(c, name) → (T, error)</span>
+                            <p class="text-ink/60 font-sans mt-1 text-xs">Resolve named registration</p>
+                        </div>
+                        <div class="p-3 bg-white rounded-lg border border-ink/5">
+                            <code class="text-coral">ResolveInScope[T]</code><span class="text-ink/40">(c, scope) → (T, error)</span>
+                            <p class="text-ink/60 font-sans mt-1 text-xs">Resolve within a scope</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Lifetimes -->
+                <div class="bg-paper rounded-2xl p-8 border border-ink/5">
+                    <h3 class="font-display text-2xl mb-6 flex items-center gap-3">
+                        <span class="w-8 h-8 rounded-lg bg-sage/10 flex items-center justify-center text-sage text-sm">L</span>
+                        Lifetimes
+                    </h3>
+                    <div class="space-y-4">
+                        <div class="flex items-start gap-3">
+                            <code class="font-mono text-sm bg-sage/10 text-sage px-2 py-1 rounded">Transient</code>
+                            <p class="text-ink/60 text-sm">New instance every resolution (default)</p>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <code class="font-mono text-sm bg-accent/10 text-accent px-2 py-1 rounded">Singleton</code>
+                            <p class="text-ink/60 text-sm">Single shared instance</p>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <code class="font-mono text-sm bg-coral/10 text-coral px-2 py-1 rounded">Scoped</code>
+                            <p class="text-ink/60 text-sm">One instance per scope</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Options -->
+                <div class="bg-paper rounded-2xl p-8 border border-ink/5">
+                    <h3 class="font-display text-2xl mb-6 flex items-center gap-3">
+                        <span class="w-8 h-8 rounded-lg bg-purple-500/10 flex items-center justify-center text-purple-500 text-sm">O</span>
+                        Options
+                    </h3>
+                    <div class="space-y-4 font-mono text-sm">
+                        <div class="p-3 bg-white rounded-lg border border-ink/5">
+                            <code class="text-purple-500">AsSingleton()</code>
+                        </div>
+                        <div class="p-3 bg-white rounded-lg border border-ink/5">
+                            <code class="text-purple-500">AsTransient()</code>
+                        </div>
+                        <div class="p-3 bg-white rounded-lg border border-ink/5">
+                            <code class="text-purple-500">AsScoped()</code>
+                        </div>
+                        <div class="p-3 bg-white rounded-lg border border-ink/5">
+                            <code class="text-purple-500">WithName(</code><span class="text-ink/40">"name"</span><code class="text-purple-500">)</code>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="py-16 border-t border-ink/5">
+        <div class="max-w-6xl mx-auto px-6">
+            <div class="flex flex-col md:flex-row items-center justify-between gap-6">
+                <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 rounded-lg gopher-gradient flex items-center justify-center">
+                        <span class="text-white font-bold text-sm">DI</span>
+                    </div>
+                    <span class="font-display text-lg">go-dependency-injector</span>
+                </div>
+                
+                <div class="flex items-center gap-6 text-sm text-ink/60">
+                    <a href="https://github.com/pegasusheavy/go-dependency-injector" class="hover:text-ink transition-colors">GitHub</a>
+                    <a href="https://github.com/pegasusheavy/go-dependency-injector/issues" class="hover:text-ink transition-colors">Issues</a>
+                    <a href="https://pkg.go.dev/github.com/pegasusheavy/go-dependency-injector" class="hover:text-ink transition-colors">pkg.go.dev</a>
+                </div>
+                
+                <p class="text-sm text-ink/40">MIT License</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Copy install command
+        function copyInstall() {
+            const text = 'go get github.com/pegasusheavy/go-dependency-injector';
+            navigator.clipboard.writeText(text).then(() => {
+                const btn = document.getElementById('install-text');
+                const original = btn.textContent;
+                btn.textContent = 'Copied!';
+                setTimeout(() => btn.textContent = original, 2000);
+            });
+        }
+        
+        // Intersection Observer for animations
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.remove('opacity-0');
+                }
+            });
+        }, { threshold: 0.1 });
+        
+        document.querySelectorAll('.animate-fade-up').forEach(el => observer.observe(el));
+        
+        // Smooth scroll
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+    </script>
+</body>
+</html>
+
