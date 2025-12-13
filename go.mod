@@ -1,5 +1,3 @@
-module github.com/joseph/go-dependency-injection
+module github.com/pegasusheavy/go-dependency-injector
 
 go 1.22
-
-

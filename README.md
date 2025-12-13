@@ -1,5 +1,10 @@
 # Go Dependency Injector
 
+[![Go Reference](https://pkg.go.dev/badge/github.com/pegasusheavy/go-dependency-injector.svg)](https://pkg.go.dev/github.com/pegasusheavy/go-dependency-injector)
+[![Go Report Card](https://goreportcard.com/badge/github.com/pegasusheavy/go-dependency-injector)](https://goreportcard.com/report/github.com/pegasusheavy/go-dependency-injector)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Go Version](https://img.shields.io/github/go-mod/go-version/pegasusheavy/go-dependency-injector)](https://github.com/pegasusheavy/go-dependency-injector)
+
 A lightweight, type-safe dependency injection container for Go, leveraging generics for compile-time safety and a clean, intuitive API.
 
 ## Features
@@ -396,7 +401,53 @@ The container is fully thread-safe. You can safely:
 
 MIT License - see [LICENSE](LICENSE) for details.
 
+## Package Discovery
+
+This package is automatically indexed by [pkg.go.dev](https://pkg.go.dev/github.com/pegasusheavy/go-dependency-injector) once you create a version tag. Users can:
+
+- Browse documentation at https://pkg.go.dev/github.com/pegasusheavy/go-dependency-injector
+- Import directly: `go get github.com/pegasusheavy/go-dependency-injector`
+- View examples and API documentation
+
+### For Maintainers
+
+To publish a new version:
+
+```bash
+# Create and push a new semantic version tag
+git tag v1.0.0
+git push origin v1.0.0
+
+# The package will be automatically indexed by pkg.go.dev
+# You can verify at: https://pkg.go.dev/github.com/pegasusheavy/go-dependency-injector@v1.0.0
+```
+
+## Related Projects
+
+- [uber-go/dig](https://github.com/uber-go/dig) - Reflection-based DI framework
+- [google/wire](https://github.com/google/wire) - Compile-time DI code generator
+- [samber/do](https://github.com/samber/do) - Generic-based DI container
+
+## FAQ
+
+### Why use this over uber-go/dig or google/wire?
+
+- **Type Safety**: Uses generics for compile-time type checking
+- **Simplicity**: Minimal API surface with intuitive methods
+- **Zero Dependencies**: No external dependencies
+- **Modern Go**: Built for Go 1.22+ with generics
+
+### Can I use this in production?
+
+Yes! The library is fully tested, thread-safe, and follows Go best practices.
+
+### How does performance compare?
+
+See `di/benchmark_test.go` for benchmarks. Performance is comparable to other DI solutions with minimal overhead.
+
 ## Contributing
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+Contributions are welcome! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
+
+Please feel free to submit a Pull Request or open an issue for bugs, features, or questions.
 

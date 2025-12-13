@@ -6,7 +6,7 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/joseph/go-dependency-injection/di"
+	"github.com/pegasusheavy/go-dependency-injector/di"
 )
 
 // =============================================================================
