@@ -1,0 +1,119 @@
+# Git-Flow Branching Pattern
+
+Follow the git-flow branching model for all version control operations.
+
+## Branch Structure
+
+### Primary Branches (Long-lived)
+
+| Branch | Purpose |
+|--------|---------|
+| `main` | Production-ready code. Only receives merges from `release/*` and `hotfix/*` |
+| `develop` | Integration branch. Features merge here first |
+
+### Supporting Branches (Short-lived)
+
+| Branch | Pattern | Created From | Merges Into |
+|--------|---------|--------------|-------------|
+| Feature | `feature/<name>` | `develop` | `develop` |
+| Release | `release/<version>` | `develop` | `main` and `develop` |
+| Hotfix | `hotfix/<name>` | `main` | `main` and `develop` |
+| Bugfix | `bugfix/<name>` | `develop` | `develop` |
+
+## Branch Naming Conventions
+
+```
+feature/add-user-authentication
+feature/ISSUE-123-implement-caching
+release/v1.2.0
+hotfix/fix-critical-login-bug
+bugfix/resolve-memory-leak
+```
+
+- Use lowercase with hyphens (kebab-case)
+- Be descriptive but concise
+- Include issue/ticket numbers when applicable
+
+## Workflow Rules
+
+### Starting New Work
+
+1. **Features**: Always branch from `develop`
+   ```bash
+   git checkout develop
+   git pull origin develop
+   git checkout -b feature/<name>
+   ```
+
+2. **Hotfixes**: Always branch from `main`
+   ```bash
+   git checkout main
+   git pull origin main
+   git checkout -b hotfix/<name>
+   ```
+
+### Completing Work
+
+1. **Features**: Create PR to `develop`, squash merge preferred
+2. **Releases**: Merge to both `main` (with tag) and back to `develop`
+3. **Hotfixes**: Merge to both `main` (with tag) and back to `develop`
+
+### Version Tagging
+
+- Tag releases on `main` using semantic versioning: `v1.0.0`, `v1.1.0`, `v2.0.0`
+- Hotfixes increment patch version: `v1.0.1`
+
+## Commit Message Format
+
+```
+<type>(<scope>): <subject>
+
+<body>
+
+<footer>
+```
+
+**Types**: `feat`, `fix`, `docs`, `style`, `refactor`, `test`, `chore`
+
+**Examples**:
+```
+feat(auth): add JWT token refresh mechanism
+fix(api): resolve race condition in connection pool
+docs(readme): update installation instructions
+```
+
+## Commands Reference
+
+```bash
+# Start feature
+git flow feature start <name>
+# or manually:
+git checkout -b feature/<name> develop
+
+# Finish feature
+git flow feature finish <name>
+# or manually:
+git checkout develop && git merge --no-ff feature/<name>
+
+# Start release
+git flow release start <version>
+
+# Finish release (tags and merges to main + develop)
+git flow release finish <version>
+
+# Start hotfix
+git flow hotfix start <name>
+
+# Finish hotfix
+git flow hotfix finish <name>
+```
+
+## Pull Request Guidelines
+
+- Feature PRs target `develop`
+- Release PRs target `main`
+- Hotfix PRs target `main` (then cherry-pick or merge to `develop`)
+- Require at least one approval before merging
+- Ensure CI passes before merging
+- Use squash merges for features to keep history clean
+- Use merge commits for releases/hotfixes to preserve history
