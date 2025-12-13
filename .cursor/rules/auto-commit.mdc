@@ -1,0 +1,52 @@
+# Auto-Commit After Work
+
+Always commit changes to git after completing work.
+
+## Rule
+
+When the agent finishes a task that modifies files, it must:
+
+1. Stage all relevant changes with `git add`
+2. Commit with a descriptive message following conventional commits format
+3. Push to the remote repository (if configured)
+
+## Commit Message Format
+
+```
+<type>(<scope>): <short description>
+```
+
+**Types:**
+- `feat` — New feature
+- `fix` — Bug fix
+- `docs` — Documentation changes
+- `style` — Formatting, whitespace (no code change)
+- `refactor` — Code restructuring (no behavior change)
+- `test` — Adding or updating tests
+- `chore` — Maintenance, dependencies, configs
+
+**Examples:**
+```
+feat(auth): add JWT token validation
+fix(api): resolve null pointer in user lookup
+docs(readme): update installation instructions
+chore(deps): upgrade to Go 1.22
+test(container): add circular dependency tests
+```
+
+## Workflow
+
+```bash
+# After completing work
+git add <files>
+git commit -m "<type>(<scope>): <description>"
+git push
+```
+
+## Exceptions
+
+Do NOT auto-commit when:
+- The user explicitly asks not to commit
+- Changes are incomplete or broken
+- Tests are failing
+- The user is reviewing changes before committing
