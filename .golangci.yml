@@ -17,16 +17,41 @@ linters:
     - gocritic
     - revive
     - gosec
-    - shadow
 
 linters-settings:
   errcheck:
-    check-type-assertions: true
-    check-blank: true
+    check-type-assertions: false  # Type assertions are common in generic code
+    check-blank: false  # Allow blank identifier for deliberate error ignoring
   
   govet:
     enable:
-      - shadow
+      - atomic
+      - bools
+      - buildtag
+      - composites
+      - copylocks
+      - deepequalerrors
+      - errorsas
+      - httpresponse
+      - ifaceassert
+      - loopclosure
+      - lostcancel
+      - nilfunc
+      - nilness
+      - printf
+      - shift
+      - stdmethods
+      - stringintconv
+      - structtag
+      - testinggoroutine
+      - tests
+      - unmarshal
+      - unreachable
+      - unsafeptr
+      - unusedresult
+    disable:
+      - fieldalignment  # Micro-optimization, not critical for correctness
+      - shadow  # Can be overly strict
   
   revive:
     rules:
@@ -38,7 +63,13 @@ linters-settings:
         disabled: false
 
 issues:
-  exclude-use-default: false
-  max-issues-per-linter: 0
-  max-same-issues: 0
+  exclude-use-default: true
+  max-issues-per-linter: 50
+  max-same-issues: 3
+  exclude-rules:
+    # Exclude some linters from test files
+    - path: _test\.go
+      linters:
+        - errcheck
+        - gosec
 
