@@ -1,5 +1,7 @@
 package di
 
+import "sync"
+
 // Lifetime defines how long a resolved instance lives.
 type Lifetime int
 
@@ -29,6 +31,7 @@ func (l Lifetime) String() string {
 
 // Scope represents a resolution scope for scoped dependencies.
 type Scope struct {
+	mu        sync.RWMutex
 	name      string
 	instances map[any]any
 	parent    *Container
@@ -48,3 +51,17 @@ func (s *Scope) Name() string {
 	return s.name
 }
 
+// get retrieves an instance from the scope cache.
+func (s *Scope) get(key any) (any, bool) {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+	instance, ok := s.instances[key]
+	return instance, ok
+}
+
+// set stores an instance in the scope cache.
+func (s *Scope) set(key any, instance any) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	s.instances[key] = instance
+}

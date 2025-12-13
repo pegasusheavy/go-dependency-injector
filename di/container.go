@@ -206,7 +206,7 @@ func (c *Container) resolve(targetType reflect.Type, name string, scope *Scope, 
 
 	// Check scope cache for scoped dependencies
 	if reg.lifetime == Scoped && scope != nil {
-		if instance, ok := scope.instances[key]; ok {
+		if instance, ok := scope.get(key); ok {
 			return instance, nil
 		}
 	}
@@ -225,7 +225,7 @@ func (c *Container) resolve(targetType reflect.Type, name string, scope *Scope, 
 		c.mu.Unlock()
 	case Scoped:
 		if scope != nil {
-			scope.instances[key] = instance
+			scope.set(key, instance)
 		}
 	}
 
@@ -332,4 +332,3 @@ func (c *Container) Clear() {
 	c.singletons = make(map[registrationKey]any)
 	c.scopes = make(map[string]*Scope)
 }
-

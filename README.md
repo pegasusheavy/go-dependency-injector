@@ -185,7 +185,7 @@ di.Register[*RequestContext](c, func() *RequestContext {
 // Per HTTP request
 func handler(w http.ResponseWriter, r *http.Request) {
     scope := container.CreateScope("request-" + r.Header.Get("X-Request-ID"))
-    
+
     // Same instance within this scope
     ctx1, _ := di.ResolveInScope[*RequestContext](container, scope)
     ctx2, _ := di.ResolveInScope[*RequestContext](container, scope)
@@ -249,7 +249,7 @@ import (
     "database/sql"
     "log"
     "net/http"
-    
+
     "github.com/pegasusheavy/go-dependency-injector/di"
 )
 
@@ -279,27 +279,27 @@ type UserHandler interface {
 // Bootstrap the application
 func main() {
     container := di.New()
-    
+
     // Infrastructure layer
     di.Register[Config](container, NewEnvConfig, di.AsSingleton())
     di.Register[Logger](container, NewZapLogger, di.AsSingleton())
     di.Register[*sql.DB](container, func(cfg Config) (*sql.DB, error) {
         return sql.Open("postgres", cfg.DatabaseURL())
     }, di.AsSingleton())
-    
+
     // Data layer
     di.Register[UserRepository](container, NewPostgresUserRepo)
-    
+
     // Business layer
     di.Register[UserService](container, NewUserService)
-    
+
     // Presentation layer
     di.Register[UserHandler](container, NewUserHandler)
-    
+
     // Start server
     handler := di.MustResolve[UserHandler](container)
     config := di.MustResolve[Config](container)
-    
+
     log.Printf("Starting server on %s", config.Port())
     http.ListenAndServe(config.Port(), handler)
 }
@@ -361,20 +361,20 @@ The DI container makes testing easy by allowing you to swap implementations:
 ```go
 func TestUserService(t *testing.T) {
     container := di.New()
-    
+
     // Register mock dependencies
     di.RegisterInstance[Logger](container, &MockLogger{})
     di.RegisterInstance[UserRepository](container, &MockUserRepo{
         users: map[int]*User{1: {ID: 1, Name: "Test"}},
     })
-    
+
     // Register the real service
     di.Register[UserService](container, NewUserService)
-    
+
     // Test
     service := di.MustResolve[UserService](container)
     user, err := service.GetUser(1)
-    
+
     assert.NoError(t, err)
     assert.Equal(t, "Test", user.Name)
 }

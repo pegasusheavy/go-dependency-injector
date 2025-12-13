@@ -1,0 +1,14 @@
+coverage.out
+coverage.html
+coverage.json
+coverage.txt
+coverage.xml
+coverage.md
+coverage.yml
+coverage.yaml
+coverage.jsonl
+coverage.jsonl.gz
+coverage.jsonl.bz2
+coverage.jsonl.xz
+coverage.jsonl.lz4
+coverage.jsonl.zstd

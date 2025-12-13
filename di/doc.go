@@ -36,4 +36,3 @@
 // Scoped: A single instance per scope. Useful for request-scoped dependencies
 // in web applications.
 package di
-

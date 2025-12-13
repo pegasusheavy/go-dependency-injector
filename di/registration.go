@@ -66,4 +66,3 @@ type registrationKey struct {
 	typ  reflect.Type
 	name string
 }
-

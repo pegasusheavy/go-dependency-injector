@@ -60,4 +60,3 @@ type ErrScopeNotFound struct {
 func (e ErrScopeNotFound) Error() string {
 	return fmt.Sprintf("di: scope %q not found", e.Name)
 }
-

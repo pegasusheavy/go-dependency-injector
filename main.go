@@ -356,4 +356,3 @@ func demonstrateScopedResolution(c *di.Container) {
 	fmt.Printf("\n  Scope 'request-2' context: %s\n", ctx2.RequestID)
 	fmt.Printf("  Different from request-1? %v\n", ctx1a.RequestID != ctx2.RequestID)
 }
-
