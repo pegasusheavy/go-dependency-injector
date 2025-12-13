@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Go Dependency Injector — Type-Safe DI for Go</title>
     <meta name="description" content="A lightweight, type-safe dependency injection container for Go with generics support.">
-    
+
     <!-- Tailwind CSS 4 -->
     <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
     <script>
@@ -33,13 +33,16 @@
             }
         }
     </script>
+
+    <!-- Font Awesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
     <link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700&display=swap" rel="stylesheet">
-    
+
     <style>
         @keyframes fadeUp {
             from { opacity: 0; transform: translateY(20px); }
@@ -53,42 +56,42 @@
             from { opacity: 0; transform: translateX(-10px); }
             to { opacity: 1; transform: translateX(0); }
         }
-        
+
         .stagger-1 { animation-delay: 0.1s; }
         .stagger-2 { animation-delay: 0.2s; }
         .stagger-3 { animation-delay: 0.3s; }
         .stagger-4 { animation-delay: 0.4s; }
         .stagger-5 { animation-delay: 0.5s; }
-        
+
         .code-block {
             background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
         }
-        
+
         .gopher-gradient {
             background: linear-gradient(135deg, #00ADD8 0%, #5DC9A3 50%, #CE3262 100%);
         }
-        
+
         .feature-card {
             background: linear-gradient(145deg, rgba(255,255,255,0.9) 0%, rgba(250,249,247,0.95) 100%);
             backdrop-filter: blur(10px);
         }
-        
+
         .hero-pattern {
             background-color: #faf9f7;
-            background-image: 
+            background-image:
                 radial-gradient(circle at 20% 50%, rgba(0, 173, 216, 0.08) 0%, transparent 50%),
                 radial-gradient(circle at 80% 20%, rgba(206, 50, 98, 0.06) 0%, transparent 40%),
                 radial-gradient(circle at 60% 80%, rgba(93, 201, 163, 0.08) 0%, transparent 45%);
         }
-        
+
         pre code {
             font-family: 'JetBrains Mono', monospace;
         }
-        
+
         .copy-btn:hover {
             transform: scale(1.05);
         }
-        
+
         .nav-blur {
             backdrop-filter: saturate(180%) blur(20px);
             background: rgba(250, 249, 247, 0.8);
@@ -109,9 +112,9 @@
                 <a href="#features" class="text-sm text-ink/60 hover:text-ink transition-colors">Features</a>
                 <a href="#quickstart" class="text-sm text-ink/60 hover:text-ink transition-colors">Quick Start</a>
                 <a href="#api" class="text-sm text-ink/60 hover:text-ink transition-colors">API</a>
-                <a href="https://github.com/pegasusheavy/go-dependency-injector" 
+                <a href="https://github.com/pegasusheavy/go-dependency-injector"
                    class="flex items-center gap-2 px-4 py-2 bg-ink text-paper rounded-full text-sm font-medium hover:bg-ink/80 transition-colors">
-                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+                    <i class="fa-brands fa-github"></i>
                     GitHub
                 </a>
             </div>
@@ -127,29 +130,27 @@
                         <span class="w-2 h-2 rounded-full bg-accent animate-pulse"></span>
                         Go 1.22+ with Generics
                     </div>
-                    
+
                     <h1 class="font-display text-5xl lg:text-7xl leading-[1.1] mb-6">
                         Dependency Injection,<br>
                         <span class="italic text-accent">done right.</span>
                     </h1>
-                    
+
                     <p class="text-xl text-ink/60 leading-relaxed mb-8 max-w-lg">
                         A lightweight, type-safe DI container for Go. Leverage generics for compile-time safety with a clean, intuitive API.
                     </p>
-                    
+
                     <div class="flex flex-wrap gap-4">
                         <a href="#quickstart" class="px-6 py-3 bg-ink text-paper rounded-full font-medium hover:bg-ink/80 transition-all hover:scale-105">
                             Get Started →
                         </a>
                         <button onclick="copyInstall()" class="copy-btn px-6 py-3 border border-ink/20 rounded-full font-mono text-sm hover:border-ink/40 transition-all flex items-center gap-2">
                             <span id="install-text">go get github.com/pegasusheavy/go-dependency-injector</span>
-                            <svg class="w-4 h-4 text-ink/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
-                            </svg>
+                            <i class="fa-regular fa-copy text-ink/40"></i>
                         </button>
                     </div>
                 </div>
-                
+
                 <div class="opacity-0 animate-fade-up stagger-2">
                     <div class="code-block rounded-2xl p-6 shadow-2xl shadow-ink/10">
                         <div class="flex items-center gap-2 mb-4">
@@ -161,7 +162,7 @@
                         <pre class="text-sm leading-relaxed overflow-x-auto"><code class="text-gray-300"><span class="text-coral">container</span> := <span class="text-accent">di</span>.<span class="text-sage">New</span>()
 
 <span class="text-white/40">// Register with auto-resolved dependencies</span>
-<span class="text-accent">di</span>.<span class="text-sage">Register</span>[<span class="text-coral">UserService</span>](container, 
+<span class="text-accent">di</span>.<span class="text-sage">Register</span>[<span class="text-coral">UserService</span>](container,
     <span class="text-purple-400">func</span>(db <span class="text-coral">Database</span>, log <span class="text-coral">Logger</span>) <span class="text-coral">UserService</span> {
         <span class="text-purple-400">return</span> &DefaultUserService{db, log}
     },
@@ -185,69 +186,57 @@
                     <span class="italic text-ink/40">nothing you don't.</span>
                 </h2>
             </div>
-            
+
             <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                 <!-- Feature 1 -->
                 <div class="feature-card p-8 rounded-2xl border border-ink/5 opacity-0 animate-fade-up stagger-1">
                     <div class="w-12 h-12 rounded-xl bg-accent/10 flex items-center justify-center mb-5">
-                        <svg class="w-6 h-6 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
-                        </svg>
+                        <i class="fa-solid fa-shield-halved text-xl text-accent"></i>
                     </div>
                     <h3 class="font-display text-xl mb-2">Type-Safe Generics</h3>
                     <p class="text-ink/60 leading-relaxed">Compile-time type checking with <code class="font-mono text-sm bg-ink/5 px-1.5 py-0.5 rounded">Register[T]()</code> and <code class="font-mono text-sm bg-ink/5 px-1.5 py-0.5 rounded">Resolve[T]()</code>. No runtime type assertions.</p>
                 </div>
-                
+
                 <!-- Feature 2 -->
                 <div class="feature-card p-8 rounded-2xl border border-ink/5 opacity-0 animate-fade-up stagger-2">
                     <div class="w-12 h-12 rounded-xl bg-coral/10 flex items-center justify-center mb-5">
-                        <svg class="w-6 h-6 text-coral" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
-                        </svg>
+                        <i class="fa-solid fa-arrows-rotate text-xl text-coral"></i>
                     </div>
                     <h3 class="font-display text-xl mb-2">Flexible Lifetimes</h3>
                     <p class="text-ink/60 leading-relaxed">Transient, Singleton, or Scoped. Control exactly how long your dependencies live and when they're created.</p>
                 </div>
-                
+
                 <!-- Feature 3 -->
                 <div class="feature-card p-8 rounded-2xl border border-ink/5 opacity-0 animate-fade-up stagger-3">
                     <div class="w-12 h-12 rounded-xl bg-sage/10 flex items-center justify-center mb-5">
-                        <svg class="w-6 h-6 text-sage" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
-                        </svg>
+                        <i class="fa-solid fa-bolt text-xl text-sage"></i>
                     </div>
                     <h3 class="font-display text-xl mb-2">Auto Resolution</h3>
                     <p class="text-ink/60 leading-relaxed">Factory parameters are automatically resolved. Just declare what you need and let the container handle wiring.</p>
                 </div>
-                
+
                 <!-- Feature 4 -->
                 <div class="feature-card p-8 rounded-2xl border border-ink/5 opacity-0 animate-fade-up stagger-4">
                     <div class="w-12 h-12 rounded-xl bg-purple-500/10 flex items-center justify-center mb-5">
-                        <svg class="w-6 h-6 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
-                        </svg>
+                        <i class="fa-solid fa-triangle-exclamation text-xl text-purple-500"></i>
                     </div>
                     <h3 class="font-display text-xl mb-2">Circular Detection</h3>
                     <p class="text-ink/60 leading-relaxed">Automatically detects circular dependencies and fails fast with clear, actionable error messages.</p>
                 </div>
-                
+
                 <!-- Feature 5 -->
                 <div class="feature-card p-8 rounded-2xl border border-ink/5 opacity-0 animate-fade-up stagger-5">
                     <div class="w-12 h-12 rounded-xl bg-amber-500/10 flex items-center justify-center mb-5">
-                        <svg class="w-6 h-6 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/>
-                        </svg>
+                        <i class="fa-solid fa-tags text-xl text-amber-500"></i>
                     </div>
                     <h3 class="font-display text-xl mb-2">Named Registrations</h3>
                     <p class="text-ink/60 leading-relaxed">Register multiple implementations of the same interface with names. Perfect for strategy patterns.</p>
                 </div>
-                
+
                 <!-- Feature 6 -->
                 <div class="feature-card p-8 rounded-2xl border border-ink/5 opacity-0 animate-fade-up stagger-5">
                     <div class="w-12 h-12 rounded-xl bg-ink/5 flex items-center justify-center mb-5">
-                        <svg class="w-6 h-6 text-ink/60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
-                        </svg>
+                        <i class="fa-solid fa-lock text-xl text-ink/60"></i>
                     </div>
                     <h3 class="font-display text-xl mb-2">Thread Safe</h3>
                     <p class="text-ink/60 leading-relaxed">Fully concurrent. Register and resolve from multiple goroutines without worry.</p>
@@ -263,7 +252,7 @@
                 <h2 class="font-display text-4xl lg:text-5xl mb-4">Quick Start</h2>
                 <p class="text-xl text-ink/60">Up and running in under a minute</p>
             </div>
-            
+
             <div class="space-y-8">
                 <!-- Step 1 -->
                 <div class="flex gap-6 items-start">
@@ -275,7 +264,7 @@
                         </div>
                     </div>
                 </div>
-                
+
                 <!-- Step 2 -->
                 <div class="flex gap-6 items-start">
                     <div class="w-10 h-10 rounded-full bg-coral text-white flex items-center justify-center font-bold shrink-0">2</div>
@@ -298,7 +287,7 @@
                         </div>
                     </div>
                 </div>
-                
+
                 <!-- Step 3 -->
                 <div class="flex gap-6 items-start">
                     <div class="w-10 h-10 rounded-full bg-sage text-white flex items-center justify-center font-bold shrink-0">3</div>
@@ -328,12 +317,14 @@ service.<span class="text-sage">DoSomething</span>()</code></pre>
                 <h2 class="font-display text-4xl lg:text-5xl mb-4">API Reference</h2>
                 <p class="text-xl text-ink/60">Everything at a glance</p>
             </div>
-            
+
             <div class="grid lg:grid-cols-2 gap-8">
                 <!-- Registration -->
                 <div class="bg-paper rounded-2xl p-8 border border-ink/5">
                     <h3 class="font-display text-2xl mb-6 flex items-center gap-3">
-                        <span class="w-8 h-8 rounded-lg bg-accent/10 flex items-center justify-center text-accent text-sm">R</span>
+                        <span class="w-8 h-8 rounded-lg bg-accent/10 flex items-center justify-center text-accent">
+                            <i class="fa-solid fa-plus text-sm"></i>
+                        </span>
                         Registration
                     </h3>
                     <div class="space-y-4 font-mono text-sm">
@@ -351,11 +342,13 @@ service.<span class="text-sage">DoSomething</span>()</code></pre>
                         </div>
                     </div>
                 </div>
-                
+
                 <!-- Resolution -->
                 <div class="bg-paper rounded-2xl p-8 border border-ink/5">
                     <h3 class="font-display text-2xl mb-6 flex items-center gap-3">
-                        <span class="w-8 h-8 rounded-lg bg-coral/10 flex items-center justify-center text-coral text-sm">R</span>
+                        <span class="w-8 h-8 rounded-lg bg-coral/10 flex items-center justify-center text-coral">
+                            <i class="fa-solid fa-arrow-right-from-bracket text-sm"></i>
+                        </span>
                         Resolution
                     </h3>
                     <div class="space-y-4 font-mono text-sm">
@@ -377,11 +370,13 @@ service.<span class="text-sage">DoSomething</span>()</code></pre>
                         </div>
                     </div>
                 </div>
-                
+
                 <!-- Lifetimes -->
                 <div class="bg-paper rounded-2xl p-8 border border-ink/5">
                     <h3 class="font-display text-2xl mb-6 flex items-center gap-3">
-                        <span class="w-8 h-8 rounded-lg bg-sage/10 flex items-center justify-center text-sage text-sm">L</span>
+                        <span class="w-8 h-8 rounded-lg bg-sage/10 flex items-center justify-center text-sage">
+                            <i class="fa-solid fa-clock text-sm"></i>
+                        </span>
                         Lifetimes
                     </h3>
                     <div class="space-y-4">
@@ -399,11 +394,13 @@ service.<span class="text-sage">DoSomething</span>()</code></pre>
                         </div>
                     </div>
                 </div>
-                
+
                 <!-- Options -->
                 <div class="bg-paper rounded-2xl p-8 border border-ink/5">
                     <h3 class="font-display text-2xl mb-6 flex items-center gap-3">
-                        <span class="w-8 h-8 rounded-lg bg-purple-500/10 flex items-center justify-center text-purple-500 text-sm">O</span>
+                        <span class="w-8 h-8 rounded-lg bg-purple-500/10 flex items-center justify-center text-purple-500">
+                            <i class="fa-solid fa-sliders text-sm"></i>
+                        </span>
                         Options
                     </h3>
                     <div class="space-y-4 font-mono text-sm">
@@ -435,13 +432,19 @@ service.<span class="text-sage">DoSomething</span>()</code></pre>
                     </div>
                     <span class="font-display text-lg">go-dependency-injector</span>
                 </div>
-                
+
                 <div class="flex items-center gap-6 text-sm text-ink/60">
-                    <a href="https://github.com/pegasusheavy/go-dependency-injector" class="hover:text-ink transition-colors">GitHub</a>
-                    <a href="https://github.com/pegasusheavy/go-dependency-injector/issues" class="hover:text-ink transition-colors">Issues</a>
-                    <a href="https://pkg.go.dev/github.com/pegasusheavy/go-dependency-injector" class="hover:text-ink transition-colors">pkg.go.dev</a>
+                    <a href="https://github.com/pegasusheavy/go-dependency-injector" class="hover:text-ink transition-colors flex items-center gap-2">
+                        <i class="fa-brands fa-github"></i> GitHub
+                    </a>
+                    <a href="https://github.com/pegasusheavy/go-dependency-injector/issues" class="hover:text-ink transition-colors flex items-center gap-2">
+                        <i class="fa-solid fa-circle-exclamation"></i> Issues
+                    </a>
+                    <a href="https://pkg.go.dev/github.com/pegasusheavy/go-dependency-injector" class="hover:text-ink transition-colors flex items-center gap-2">
+                        <i class="fa-solid fa-book"></i> pkg.go.dev
+                    </a>
                 </div>
-                
+
                 <p class="text-sm text-ink/40">MIT License</p>
             </div>
         </div>
@@ -458,7 +461,7 @@ service.<span class="text-sage">DoSomething</span>()</code></pre>
                 setTimeout(() => btn.textContent = original, 2000);
             });
         }
-        
+
         // Intersection Observer for animations
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
@@ -467,9 +470,9 @@ service.<span class="text-sage">DoSomething</span>()</code></pre>
                 }
             });
         }, { threshold: 0.1 });
-        
+
         document.querySelectorAll('.animate-fade-up').forEach(el => observer.observe(el));
-        
+
         // Smooth scroll
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', function(e) {
