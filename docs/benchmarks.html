@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Benchmarks — Go Dependency Injector</title>
     <meta name="description" content="Performance benchmarks for the Go Dependency Injector.">
-    
+
     <!-- Tailwind CSS 4 -->
     <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
     <script>
@@ -28,42 +28,42 @@
             }
         }
     </script>
-    
+
     <!-- Font Awesome 6 -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-    
+
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
     <link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700&display=swap" rel="stylesheet">
-    
+
     <!-- Marked.js for Markdown rendering -->
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    
+
     <style>
         .gopher-gradient {
             background: linear-gradient(135deg, #00ADD8 0%, #5DC9A3 50%, #CE3262 100%);
         }
-        
+
         .nav-blur {
             backdrop-filter: saturate(180%) blur(20px);
             background: rgba(250, 249, 247, 0.8);
         }
-        
+
         .hero-pattern {
             background-color: #faf9f7;
-            background-image: 
+            background-image:
                 radial-gradient(circle at 20% 50%, rgba(0, 173, 216, 0.08) 0%, transparent 50%),
                 radial-gradient(circle at 80% 20%, rgba(206, 50, 98, 0.06) 0%, transparent 40%),
                 radial-gradient(circle at 60% 80%, rgba(93, 201, 163, 0.08) 0%, transparent 45%);
         }
-        
+
         /* Custom styles for rendered markdown */
         #markdown-content {
             font-family: 'Satoshi', system-ui, sans-serif;
         }
-        
+
         #markdown-content h1 {
             font-family: 'Instrument Serif', Georgia, serif;
             font-size: 3rem;
@@ -71,7 +71,7 @@
             margin-bottom: 1rem;
             color: #0a0a0a;
         }
-        
+
         #markdown-content h2 {
             font-family: 'Instrument Serif', Georgia, serif;
             font-size: 1.875rem;
@@ -82,7 +82,7 @@
             border-bottom: 2px solid rgba(0, 173, 216, 0.2);
             color: #0a0a0a;
         }
-        
+
         #markdown-content h3 {
             font-family: 'Satoshi', system-ui, sans-serif;
             font-size: 1.25rem;
@@ -91,13 +91,13 @@
             margin-bottom: 0.75rem;
             color: #00ADD8;
         }
-        
+
         #markdown-content p {
             color: rgba(10, 10, 10, 0.7);
             line-height: 1.75;
             margin-bottom: 1rem;
         }
-        
+
         #markdown-content table {
             width: 100%;
             border-collapse: collapse;
@@ -108,12 +108,12 @@
             overflow: hidden;
             box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
         }
-        
+
         #markdown-content thead {
             background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
             color: white;
         }
-        
+
         #markdown-content th {
             padding: 1rem;
             text-align: left;
@@ -123,20 +123,20 @@
             text-transform: uppercase;
             letter-spacing: 0.05em;
         }
-        
+
         #markdown-content td {
             padding: 0.875rem 1rem;
             border-bottom: 1px solid rgba(10, 10, 10, 0.05);
         }
-        
+
         #markdown-content tbody tr:hover {
             background: rgba(0, 173, 216, 0.03);
         }
-        
+
         #markdown-content tbody tr:last-child td {
             border-bottom: none;
         }
-        
+
         #markdown-content code {
             font-family: 'JetBrains Mono', monospace;
             background: rgba(10, 10, 10, 0.05);
@@ -145,7 +145,7 @@
             font-size: 0.875em;
             color: #CE3262;
         }
-        
+
         #markdown-content pre {
             background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
             padding: 1.5rem;
@@ -153,7 +153,7 @@
             overflow-x: auto;
             margin: 1.5rem 0;
         }
-        
+
         #markdown-content pre code {
             background: transparent;
             padding: 0;
@@ -161,30 +161,30 @@
             font-size: 0.875rem;
             line-height: 1.7;
         }
-        
+
         #markdown-content ul, #markdown-content ol {
             margin: 1rem 0;
             padding-left: 1.5rem;
             color: rgba(10, 10, 10, 0.7);
         }
-        
+
         #markdown-content li {
             margin-bottom: 0.5rem;
             line-height: 1.6;
         }
-        
+
         #markdown-content strong {
             color: #0a0a0a;
             font-weight: 600;
         }
-        
+
         #markdown-content hr {
             border: none;
             height: 1px;
             background: linear-gradient(90deg, transparent, rgba(10, 10, 10, 0.1), transparent);
             margin: 3rem 0;
         }
-        
+
         #markdown-content blockquote {
             border-left: 4px solid #00ADD8;
             padding-left: 1rem;
@@ -192,7 +192,7 @@
             color: rgba(10, 10, 10, 0.6);
             font-style: italic;
         }
-        
+
         /* Highlight performance numbers */
         #markdown-content td:nth-child(2),
         #markdown-content td:nth-child(3),
@@ -200,7 +200,7 @@
             font-family: 'JetBrains Mono', monospace;
             text-align: right;
         }
-        
+
         .loading {
             display: flex;
             align-items: center;
@@ -208,12 +208,12 @@
             min-height: 400px;
             color: rgba(10, 10, 10, 0.4);
         }
-        
+
         .loading i {
             animation: spin 1s linear infinite;
             margin-right: 0.5rem;
         }
-        
+
         @keyframes spin {
             from { transform: rotate(0deg); }
             to { transform: rotate(360deg); }
@@ -255,7 +255,7 @@
                     <i class="fa-solid fa-arrow-left mr-2"></i> Back to Home
                 </a>
             </div>
-            
+
             <!-- Stats Cards -->
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12">
                 <div class="bg-white rounded-xl p-5 border border-ink/5 text-center">
@@ -275,7 +275,7 @@
                     <div class="text-xs text-ink/50 uppercase tracking-wide">Race Conditions</div>
                 </div>
             </div>
-            
+
             <!-- Markdown Content -->
             <div id="markdown-content" class="bg-white rounded-2xl p-8 md:p-12 border border-ink/5 shadow-sm">
                 <div class="loading">
@@ -283,7 +283,7 @@
                     Loading benchmarks...
                 </div>
             </div>
-            
+
             <!-- Run Command -->
             <div class="mt-8 bg-gradient-to-r from-ink to-ink/90 rounded-xl p-6 text-paper">
                 <div class="flex items-center justify-between">
@@ -310,7 +310,7 @@
                     </div>
                     <span class="font-display text-lg">go-dependency-injector</span>
                 </div>
-                
+
                 <div class="flex items-center gap-6 text-sm text-ink/60">
                     <a href="https://github.com/pegasusheavy/go-dependency-injector" class="hover:text-ink transition-colors flex items-center gap-2">
                         <i class="fa-brands fa-github"></i> GitHub
@@ -322,7 +322,7 @@
                         <i class="fa-solid fa-book"></i> pkg.go.dev
                     </a>
                 </div>
-                
+
                 <p class="text-sm text-ink/40">MIT License</p>
             </div>
         </div>
@@ -334,14 +334,14 @@
             try {
                 const response = await fetch('benchmarks.md');
                 const markdown = await response.text();
-                
+
                 // Configure marked
                 marked.setOptions({
                     gfm: true,
                     breaks: true,
                     headerIds: true,
                 });
-                
+
                 // Render markdown
                 const html = marked.parse(markdown);
                 document.getElementById('markdown-content').innerHTML = html;
@@ -355,7 +355,7 @@
                 `;
             }
         }
-        
+
         // Copy command
         function copyCommand() {
             const text = 'go test ./di/... -bench=. -benchmem';
@@ -366,7 +366,7 @@
                 setTimeout(() => cmd.textContent = original, 2000);
             });
         }
-        
+
         // Load on page ready
         document.addEventListener('DOMContentLoaded', loadMarkdown);
     </script>
