@@ -1,0 +1,243 @@
+name: Generate Benchmarks
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'di/**'
+      - '.github/workflows/benchmarks.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  benchmark:
+    name: Run Benchmarks
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.22'
+          cache: true
+      
+      - name: Run benchmarks
+        run: |
+          go test ./di/... -bench=. -benchmem -count=3 2>&1 | tee benchmark_output.txt
+      
+      - name: Generate benchmark markdown
+        run: |
+          cat > docs/benchmarks.md << 'HEADER'
+          # Benchmark Results
+
+          Performance benchmarks for the Go Dependency Injector.
+
+          > **Auto-generated** from CI on $(date -u +"%Y-%m-%d %H:%M UTC")
+          >
+          > Runner: GitHub Actions (ubuntu-latest)
+
+          ## Summary
+
+          | Operation | Performance |
+          |-----------|-------------|
+          HEADER
+
+          # Extract key metrics for summary
+          NEW_NS=$(grep "BenchmarkNew-" benchmark_output.txt | head -1 | awk '{print $3}')
+          INSTANCE_NS=$(grep "BenchmarkResolveInstance-" benchmark_output.txt | head -1 | awk '{print $3}')
+          SINGLETON_NS=$(grep "BenchmarkResolveSingleton-" benchmark_output.txt | head -1 | awk '{print $3}')
+          REGISTER_NS=$(grep "BenchmarkRegister-" benchmark_output.txt | head -1 | awk '{print $3}')
+
+          cat >> docs/benchmarks.md << SUMMARY
+          | Container creation | **${NEW_NS} ns** |
+          | Instance resolution | **${INSTANCE_NS} ns** |
+          | Singleton resolution | **${SINGLETON_NS} ns** |
+          | Registration | **${REGISTER_NS} ns** |
+
+          ---
+
+          ## Registration Operations
+
+          These benchmarks measure the cost of registering dependencies with the container.
+
+          | Benchmark | ns/op | B/op | allocs/op |
+          |-----------|------:|-----:|----------:|
+          SUMMARY
+
+          # Registration benchmarks
+          grep -E "^Benchmark(New|Register)" benchmark_output.txt | head -4 | while read line; do
+            name=$(echo "$line" | awk '{print $1}' | sed 's/-[0-9]*$//')
+            ns=$(echo "$line" | awk '{print $3}')
+            bop=$(echo "$line" | awk '{print $5}')
+            allocs=$(echo "$line" | awk '{print $7}')
+            echo "| \`${name}\` | ${ns} | ${bop} | ${allocs} |" >> docs/benchmarks.md
+          done
+
+          cat >> docs/benchmarks.md << 'SECTION2'
+
+          ---
+
+          ## Resolution Operations
+
+          These benchmarks measure the cost of resolving dependencies from the container.
+
+          | Benchmark | ns/op | B/op | allocs/op |
+          |-----------|------:|-----:|----------:|
+          SECTION2
+
+          # Resolution benchmarks
+          grep -E "^Benchmark(Resolve|MustResolve)" benchmark_output.txt | grep -v "Parallel\|Deep\|With\|Large" | head -6 | while read line; do
+            name=$(echo "$line" | awk '{print $1}' | sed 's/-[0-9]*$//')
+            ns=$(echo "$line" | awk '{print $3}')
+            bop=$(echo "$line" | awk '{print $5}')
+            allocs=$(echo "$line" | awk '{print $7}')
+            echo "| \`${name}\` | ${ns} | ${bop} | ${allocs} |" >> docs/benchmarks.md
+          done
+
+          cat >> docs/benchmarks.md << 'SECTION3'
+
+          ---
+
+          ## Dependency Chain Resolution
+
+          These benchmarks measure resolution performance with dependency injection chains.
+
+          | Benchmark | ns/op | B/op | allocs/op |
+          |-----------|------:|-----:|----------:|
+          SECTION3
+
+          # Dependency chain benchmarks
+          grep -E "^Benchmark(ResolveWith|ResolveDeep)" benchmark_output.txt | head -3 | while read line; do
+            name=$(echo "$line" | awk '{print $1}' | sed 's/-[0-9]*$//')
+            ns=$(echo "$line" | awk '{print $3}')
+            bop=$(echo "$line" | awk '{print $5}')
+            allocs=$(echo "$line" | awk '{print $7}')
+            echo "| \`${name}\` | ${ns} | ${bop} | ${allocs} |" >> docs/benchmarks.md
+          done
+
+          cat >> docs/benchmarks.md << 'SECTION4'
+
+          ---
+
+          ## Parallel/Concurrent Performance
+
+          These benchmarks measure thread-safe concurrent resolution.
+
+          | Benchmark | ns/op | B/op | allocs/op |
+          |-----------|------:|-----:|----------:|
+          SECTION4
+
+          # Parallel benchmarks
+          grep "Parallel-" benchmark_output.txt | head -4 | while read line; do
+            name=$(echo "$line" | awk '{print $1}' | sed 's/-[0-9]*$//')
+            ns=$(echo "$line" | awk '{print $3}')
+            bop=$(echo "$line" | awk '{print $5}')
+            allocs=$(echo "$line" | awk '{print $7}')
+            echo "| \`${name}\` | ${ns} | ${bop} | ${allocs} |" >> docs/benchmarks.md
+          done
+
+          cat >> docs/benchmarks.md << 'SECTION5'
+
+          ---
+
+          ## Utility Operations
+
+          | Benchmark | ns/op | B/op | allocs/op |
+          |-----------|------:|-----:|----------:|
+          SECTION5
+
+          # Utility benchmarks
+          grep -E "^Benchmark(Has|CreateScope)" benchmark_output.txt | head -3 | while read line; do
+            name=$(echo "$line" | awk '{print $1}' | sed 's/-[0-9]*$//')
+            ns=$(echo "$line" | awk '{print $3}')
+            bop=$(echo "$line" | awk '{print $5}')
+            allocs=$(echo "$line" | awk '{print $7}')
+            echo "| \`${name}\` | ${ns} | ${bop} | ${allocs} |" >> docs/benchmarks.md
+          done
+
+          cat >> docs/benchmarks.md << 'SECTION6'
+
+          ---
+
+          ## Large Container Performance
+
+          | Benchmark | ns/op | B/op | allocs/op |
+          |-----------|------:|-----:|----------:|
+          SECTION6
+
+          # Large container benchmarks
+          grep -E "^Benchmark(Container|ResolveFromLarge)" benchmark_output.txt | head -2 | while read line; do
+            name=$(echo "$line" | awk '{print $1}' | sed 's/-[0-9]*$//')
+            ns=$(echo "$line" | awk '{print $3}')
+            bop=$(echo "$line" | awk '{print $5}')
+            allocs=$(echo "$line" | awk '{print $7}')
+            echo "| \`${name}\` | ${ns} | ${bop} | ${allocs} |" >> docs/benchmarks.md
+          done
+
+          cat >> docs/benchmarks.md << 'FOOTER'
+
+          ---
+
+          ## Recommendations
+
+          Based on these benchmarks:
+
+          1. **Use Singletons** for stateless services — significantly faster than transients after initial creation
+          2. **Use RegisterInstance** for pre-created objects — fastest resolution path
+          3. **Use Scoped** for request-scoped dependencies — excellent parallel performance
+          4. **Minimize transient chains** — each level adds allocation overhead
+
+          ---
+
+          ## Running Benchmarks Locally
+
+          ```bash
+          # Run all benchmarks
+          go test ./di/... -bench=. -benchmem
+
+          # Run specific benchmark
+          go test ./di/... -bench=BenchmarkResolveSingleton -benchmem
+
+          # Run with multiple iterations for accuracy
+          go test ./di/... -bench=. -benchmem -count=5
+          ```
+
+          ---
+
+          ## Raw Output
+
+          <details>
+          <summary>Click to expand full benchmark output</summary>
+
+          ```
+          FOOTER
+
+          cat benchmark_output.txt >> docs/benchmarks.md
+
+          cat >> docs/benchmarks.md << 'END'
+          ```
+
+          </details>
+          END
+
+      - name: Commit benchmark results
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add docs/benchmarks.md
+          
+          # Only commit if there are changes
+          if git diff --staged --quiet; then
+            echo "No changes to benchmarks"
+          else
+            git commit -m "docs: update benchmark results [skip ci]"
+            git push
+          fi
+
