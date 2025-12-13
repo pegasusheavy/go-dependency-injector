@@ -94,3 +94,4 @@ fi
 echo -e "${GREEN}✓ Commit message is valid${NC}"
 exit 0
 
+
