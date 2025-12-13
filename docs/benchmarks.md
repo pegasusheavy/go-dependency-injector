@@ -10,10 +10,10 @@ Performance benchmarks for the Go Dependency Injector.
 
 | Operation | Performance |
 |-----------|-------------|
-| Container creation | **33.77 ns** |
-| Instance resolution | **69.06 ns** |
-| Singleton resolution | **88.19 ns** |
-| Registration | **100.9 ns** |
+| Container creation | **33.41 ns** |
+| Instance resolution | **69.97 ns** |
+| Singleton resolution | **89.45 ns** |
+| Registration | **109.6 ns** |
 
 ---
 
@@ -23,10 +23,10 @@ These benchmarks measure the cost of registering dependencies with the container
 
 | Benchmark | ns/op | B/op | allocs/op |
 |-----------|------:|-----:|----------:|
-| `BenchmarkNew` | 33.77 | 0 | 0 |
-| `BenchmarkNew` | 33.39 | 0 | 0 |
-| `BenchmarkNew` | 33.39 | 0 | 0 |
-| `BenchmarkRegister` | 100.9 | 96 | 1 |
+| `BenchmarkNew` | 33.41 | 0 | 0 |
+| `BenchmarkNew` | 33.53 | 0 | 0 |
+| `BenchmarkNew` | 33.44 | 0 | 0 |
+| `BenchmarkRegister` | 109.6 | 96 | 1 |
 
 ---
 
@@ -36,12 +36,12 @@ These benchmarks measure the cost of resolving dependencies from the container.
 
 | Benchmark | ns/op | B/op | allocs/op |
 |-----------|------:|-----:|----------:|
-| `BenchmarkResolveTransient` | 308.2 | 56 | 3 |
-| `BenchmarkResolveTransient` | 303.1 | 56 | 3 |
-| `BenchmarkResolveTransient` | 303.7 | 56 | 3 |
-| `BenchmarkResolveSingleton` | 88.19 | 16 | 1 |
-| `BenchmarkResolveSingleton` | 88.49 | 16 | 1 |
-| `BenchmarkResolveSingleton` | 88.45 | 16 | 1 |
+| `BenchmarkResolveTransient` | 305.5 | 56 | 3 |
+| `BenchmarkResolveTransient` | 306.4 | 56 | 3 |
+| `BenchmarkResolveTransient` | 311.4 | 56 | 3 |
+| `BenchmarkResolveSingleton` | 89.45 | 16 | 1 |
+| `BenchmarkResolveSingleton` | 88.32 | 16 | 1 |
+| `BenchmarkResolveSingleton` | 90.18 | 16 | 1 |
 
 ---
 
@@ -51,9 +51,9 @@ These benchmarks measure resolution performance with dependency injection chains
 
 | Benchmark | ns/op | B/op | allocs/op |
 |-----------|------:|-----:|----------:|
-| `BenchmarkResolveWithOneDependency` | 648.1 | 144 | 7 |
-| `BenchmarkResolveWithOneDependency` | 648.0 | 144 | 7 |
-| `BenchmarkResolveWithOneDependency` | 648.6 | 144 | 7 |
+| `BenchmarkResolveWithOneDependency` | 645.7 | 144 | 7 |
+| `BenchmarkResolveWithOneDependency` | 650.9 | 144 | 7 |
+| `BenchmarkResolveWithOneDependency` | 651.0 | 144 | 7 |
 
 ---
 
@@ -63,10 +63,10 @@ These benchmarks measure thread-safe concurrent resolution.
 
 | Benchmark | ns/op | B/op | allocs/op |
 |-----------|------:|-----:|----------:|
-| `BenchmarkResolveSingletonParallel` | 79.51 | 16 | 1 |
-| `BenchmarkResolveSingletonParallel` | 79.51 | 16 | 1 |
-| `BenchmarkResolveSingletonParallel` | 79.43 | 16 | 1 |
-| `BenchmarkResolveTransientParallel` | 146.3 | 56 | 3 |
+| `BenchmarkResolveSingletonParallel` | 79.24 | 16 | 1 |
+| `BenchmarkResolveSingletonParallel` | 80.33 | 16 | 1 |
+| `BenchmarkResolveSingletonParallel` | 79.53 | 16 | 1 |
+| `BenchmarkResolveTransientParallel` | 144.8 | 56 | 3 |
 
 ---
 
@@ -74,9 +74,9 @@ These benchmarks measure thread-safe concurrent resolution.
 
 | Benchmark | ns/op | B/op | allocs/op |
 |-----------|------:|-----:|----------:|
-| `BenchmarkHas` | 26.98 | 0 | 0 |
-| `BenchmarkHas` | 26.84 | 0 | 0 |
-| `BenchmarkHas` | 26.97 | 0 | 0 |
+| `BenchmarkHas` | 26.78 | 0 | 0 |
+| `BenchmarkHas` | 26.80 | 0 | 0 |
+| `BenchmarkHas` | 26.80 | 0 | 0 |
 
 ---
 
@@ -84,8 +84,8 @@ These benchmarks measure thread-safe concurrent resolution.
 
 | Benchmark | ns/op | B/op | allocs/op |
 |-----------|------:|-----:|----------:|
-| `BenchmarkContainerWithManyRegistrations` | 10473 | 10208 | 106 |
-| `BenchmarkContainerWithManyRegistrations` | 10648 | 10208 | 106 |
+| `BenchmarkContainerWithManyRegistrations` | 10847 | 10208 | 106 |
+| `BenchmarkContainerWithManyRegistrations` | 10800 | 10208 | 106 |
 
 ---
 
@@ -125,74 +125,74 @@ goos: linux
 goarch: amd64
 pkg: github.com/pegasusheavy/go-dependency-injector/di
 cpu: AMD EPYC 7763 64-Core Processor                
-BenchmarkNew-4                              	35281148	        33.77 ns/op	       0 B/op	       0 allocs/op
-BenchmarkNew-4                              	35783170	        33.39 ns/op	       0 B/op	       0 allocs/op
-BenchmarkNew-4                              	35584957	        33.39 ns/op	       0 B/op	       0 allocs/op
-BenchmarkRegister-4                         	11784241	       100.9 ns/op	      96 B/op	       1 allocs/op
-BenchmarkRegister-4                         	11961526	       101.4 ns/op	      96 B/op	       1 allocs/op
-BenchmarkRegister-4                         	11558036	       104.7 ns/op	      96 B/op	       1 allocs/op
-BenchmarkRegisterWithOptions-4              	11021912	       104.8 ns/op	      96 B/op	       1 allocs/op
-BenchmarkRegisterWithOptions-4              	11429470	       103.8 ns/op	      96 B/op	       1 allocs/op
-BenchmarkRegisterWithOptions-4              	11639494	       106.5 ns/op	      96 B/op	       1 allocs/op
-BenchmarkRegisterInstance-4                 	10552128	       114.2 ns/op	      96 B/op	       1 allocs/op
-BenchmarkRegisterInstance-4                 	 9849888	       115.1 ns/op	      96 B/op	       1 allocs/op
-BenchmarkRegisterInstance-4                 	10388235	       115.2 ns/op	      96 B/op	       1 allocs/op
-BenchmarkResolveTransient-4                 	 3933405	       308.2 ns/op	      56 B/op	       3 allocs/op
-BenchmarkResolveTransient-4                 	 3914638	       303.1 ns/op	      56 B/op	       3 allocs/op
-BenchmarkResolveTransient-4                 	 3931684	       303.7 ns/op	      56 B/op	       3 allocs/op
-BenchmarkResolveSingleton-4                 	13293129	        88.19 ns/op	      16 B/op	       1 allocs/op
-BenchmarkResolveSingleton-4                 	13172013	        88.49 ns/op	      16 B/op	       1 allocs/op
-BenchmarkResolveSingleton-4                 	13297744	        88.45 ns/op	      16 B/op	       1 allocs/op
-BenchmarkResolveInstance-4                  	17291788	        69.06 ns/op	      16 B/op	       1 allocs/op
-BenchmarkResolveInstance-4                  	16988540	        69.02 ns/op	      16 B/op	       1 allocs/op
-BenchmarkResolveInstance-4                  	17026098	        69.97 ns/op	      16 B/op	       1 allocs/op
-BenchmarkResolveScopedSameScope-4           	 9716161	       115.8 ns/op	      16 B/op	       1 allocs/op
-BenchmarkResolveScopedSameScope-4           	10226342	       116.6 ns/op	      16 B/op	       1 allocs/op
-BenchmarkResolveScopedSameScope-4           	10220260	       116.2 ns/op	      16 B/op	       1 allocs/op
-BenchmarkMustResolve-4                      	12339110	        95.12 ns/op	      16 B/op	       1 allocs/op
-BenchmarkMustResolve-4                      	12348453	        95.30 ns/op	      16 B/op	       1 allocs/op
-BenchmarkMustResolve-4                      	12260962	        95.11 ns/op	      16 B/op	       1 allocs/op
-BenchmarkResolveWithOneDependency-4         	 1847868	       648.1 ns/op	     144 B/op	       7 allocs/op
-BenchmarkResolveWithOneDependency-4         	 1826055	       648.0 ns/op	     144 B/op	       7 allocs/op
-BenchmarkResolveWithOneDependency-4         	 1840140	       648.6 ns/op	     144 B/op	       7 allocs/op
-BenchmarkResolveWithTwoDependencies-4       	 1356070	       885.8 ns/op	     232 B/op	       9 allocs/op
-BenchmarkResolveWithTwoDependencies-4       	 1343416	       893.8 ns/op	     232 B/op	       9 allocs/op
-BenchmarkResolveWithTwoDependencies-4       	 1348425	       897.8 ns/op	     232 B/op	       9 allocs/op
-BenchmarkResolveDeepDependencyChain-4       	 1965902	       608.1 ns/op	     128 B/op	       6 allocs/op
-BenchmarkResolveDeepDependencyChain-4       	 1952476	       609.1 ns/op	     128 B/op	       6 allocs/op
-BenchmarkResolveDeepDependencyChain-4       	 1967620	       607.6 ns/op	     128 B/op	       6 allocs/op
-BenchmarkResolveNamed-4                     	13226448	        88.39 ns/op	      16 B/op	       1 allocs/op
-BenchmarkResolveNamed-4                     	13153689	        88.80 ns/op	      16 B/op	       1 allocs/op
-BenchmarkResolveNamed-4                     	13282407	        88.49 ns/op	      16 B/op	       1 allocs/op
-BenchmarkHas-4                              	45095649	        26.98 ns/op	       0 B/op	       0 allocs/op
-BenchmarkHas-4                              	45008785	        26.84 ns/op	       0 B/op	       0 allocs/op
-BenchmarkHas-4                              	45273504	        26.97 ns/op	       0 B/op	       0 allocs/op
-BenchmarkHasNamed-4                         	44157086	        27.38 ns/op	       0 B/op	       0 allocs/op
-BenchmarkHasNamed-4                         	44165226	        27.25 ns/op	       0 B/op	       0 allocs/op
-BenchmarkHasNamed-4                         	40480796	        27.28 ns/op	       0 B/op	       0 allocs/op
-BenchmarkCreateScope-4                      	12137769	        94.70 ns/op	     112 B/op	       2 allocs/op
-BenchmarkCreateScope-4                      	12512762	        95.69 ns/op	     112 B/op	       2 allocs/op
-BenchmarkCreateScope-4                      	12355357	        97.44 ns/op	     112 B/op	       2 allocs/op
-BenchmarkResolveSingletonParallel-4         	14875749	        79.51 ns/op	      16 B/op	       1 allocs/op
-BenchmarkResolveSingletonParallel-4         	14906710	        79.51 ns/op	      16 B/op	       1 allocs/op
-BenchmarkResolveSingletonParallel-4         	14697283	        79.43 ns/op	      16 B/op	       1 allocs/op
-BenchmarkResolveTransientParallel-4         	 8238846	       146.3 ns/op	      56 B/op	       3 allocs/op
-BenchmarkResolveTransientParallel-4         	 8212813	       146.3 ns/op	      56 B/op	       3 allocs/op
-BenchmarkResolveTransientParallel-4         	 8215731	       145.9 ns/op	      56 B/op	       3 allocs/op
-BenchmarkResolveScopedParallel-4            	17227365	        66.84 ns/op	      16 B/op	       1 allocs/op
-BenchmarkResolveScopedParallel-4            	17765860	        68.74 ns/op	      16 B/op	       1 allocs/op
-BenchmarkResolveScopedParallel-4            	17491858	        66.88 ns/op	      16 B/op	       1 allocs/op
-BenchmarkResolveWithDepsParallel-4          	 3675274	       323.6 ns/op	     144 B/op	       7 allocs/op
-BenchmarkResolveWithDepsParallel-4          	 3690685	       322.1 ns/op	     144 B/op	       7 allocs/op
-BenchmarkResolveWithDepsParallel-4          	 3726633	       322.4 ns/op	     144 B/op	       7 allocs/op
-BenchmarkContainerWithManyRegistrations-4   	  115585	     10473 ns/op	   10208 B/op	     106 allocs/op
-BenchmarkContainerWithManyRegistrations-4   	  113146	     10648 ns/op	   10208 B/op	     106 allocs/op
-BenchmarkContainerWithManyRegistrations-4   	  104773	     10810 ns/op	   10208 B/op	     106 allocs/op
-BenchmarkResolveFromLargeContainer-4        	13298329	        88.30 ns/op	      16 B/op	       1 allocs/op
-BenchmarkResolveFromLargeContainer-4        	13277791	        87.98 ns/op	      16 B/op	       1 allocs/op
-BenchmarkResolveFromLargeContainer-4        	13366665	        88.19 ns/op	      16 B/op	       1 allocs/op
+BenchmarkNew-4                              	35229590	        33.41 ns/op	       0 B/op	       0 allocs/op
+BenchmarkNew-4                              	35927958	        33.53 ns/op	       0 B/op	       0 allocs/op
+BenchmarkNew-4                              	35032476	        33.44 ns/op	       0 B/op	       0 allocs/op
+BenchmarkRegister-4                         	11942306	       109.6 ns/op	      96 B/op	       1 allocs/op
+BenchmarkRegister-4                         	11114854	       104.2 ns/op	      96 B/op	       1 allocs/op
+BenchmarkRegister-4                         	11364734	       103.1 ns/op	      96 B/op	       1 allocs/op
+BenchmarkRegisterWithOptions-4              	10331648	       107.2 ns/op	      96 B/op	       1 allocs/op
+BenchmarkRegisterWithOptions-4              	11415102	       103.0 ns/op	      96 B/op	       1 allocs/op
+BenchmarkRegisterWithOptions-4              	11739834	       102.8 ns/op	      96 B/op	       1 allocs/op
+BenchmarkRegisterInstance-4                 	10527387	       112.6 ns/op	      96 B/op	       1 allocs/op
+BenchmarkRegisterInstance-4                 	10650298	       113.5 ns/op	      96 B/op	       1 allocs/op
+BenchmarkRegisterInstance-4                 	 9951987	       119.0 ns/op	      96 B/op	       1 allocs/op
+BenchmarkResolveTransient-4                 	 3836755	       305.5 ns/op	      56 B/op	       3 allocs/op
+BenchmarkResolveTransient-4                 	 3949737	       306.4 ns/op	      56 B/op	       3 allocs/op
+BenchmarkResolveTransient-4                 	 3875955	       311.4 ns/op	      56 B/op	       3 allocs/op
+BenchmarkResolveSingleton-4                 	13296450	        89.45 ns/op	      16 B/op	       1 allocs/op
+BenchmarkResolveSingleton-4                 	13163416	        88.32 ns/op	      16 B/op	       1 allocs/op
+BenchmarkResolveSingleton-4                 	13312137	        90.18 ns/op	      16 B/op	       1 allocs/op
+BenchmarkResolveInstance-4                  	16714744	        69.97 ns/op	      16 B/op	       1 allocs/op
+BenchmarkResolveInstance-4                  	17160535	        70.14 ns/op	      16 B/op	       1 allocs/op
+BenchmarkResolveInstance-4                  	16496871	        70.68 ns/op	      16 B/op	       1 allocs/op
+BenchmarkResolveScopedSameScope-4           	10228382	       117.3 ns/op	      16 B/op	       1 allocs/op
+BenchmarkResolveScopedSameScope-4           	10129645	       117.6 ns/op	      16 B/op	       1 allocs/op
+BenchmarkResolveScopedSameScope-4           	10151343	       117.0 ns/op	      16 B/op	       1 allocs/op
+BenchmarkMustResolve-4                      	12223982	        95.62 ns/op	      16 B/op	       1 allocs/op
+BenchmarkMustResolve-4                      	12441210	        95.73 ns/op	      16 B/op	       1 allocs/op
+BenchmarkMustResolve-4                      	12396130	        96.51 ns/op	      16 B/op	       1 allocs/op
+BenchmarkResolveWithOneDependency-4         	 1822923	       645.7 ns/op	     144 B/op	       7 allocs/op
+BenchmarkResolveWithOneDependency-4         	 1839364	       650.9 ns/op	     144 B/op	       7 allocs/op
+BenchmarkResolveWithOneDependency-4         	 1833801	       651.0 ns/op	     144 B/op	       7 allocs/op
+BenchmarkResolveWithTwoDependencies-4       	 1343624	       891.3 ns/op	     232 B/op	       9 allocs/op
+BenchmarkResolveWithTwoDependencies-4       	 1338019	       887.2 ns/op	     232 B/op	       9 allocs/op
+BenchmarkResolveWithTwoDependencies-4       	 1344846	       889.0 ns/op	     232 B/op	       9 allocs/op
+BenchmarkResolveDeepDependencyChain-4       	 1979361	       612.7 ns/op	     128 B/op	       6 allocs/op
+BenchmarkResolveDeepDependencyChain-4       	 1982600	       619.5 ns/op	     128 B/op	       6 allocs/op
+BenchmarkResolveDeepDependencyChain-4       	 1957856	       614.6 ns/op	     128 B/op	       6 allocs/op
+BenchmarkResolveNamed-4                     	13238864	        90.26 ns/op	      16 B/op	       1 allocs/op
+BenchmarkResolveNamed-4                     	13111846	        88.07 ns/op	      16 B/op	       1 allocs/op
+BenchmarkResolveNamed-4                     	12757592	        88.21 ns/op	      16 B/op	       1 allocs/op
+BenchmarkHas-4                              	44919006	        26.78 ns/op	       0 B/op	       0 allocs/op
+BenchmarkHas-4                              	45560803	        26.80 ns/op	       0 B/op	       0 allocs/op
+BenchmarkHas-4                              	45287250	        26.80 ns/op	       0 B/op	       0 allocs/op
+BenchmarkHasNamed-4                         	44128734	        27.55 ns/op	       0 B/op	       0 allocs/op
+BenchmarkHasNamed-4                         	44052150	        27.20 ns/op	       0 B/op	       0 allocs/op
+BenchmarkHasNamed-4                         	43455164	        27.20 ns/op	       0 B/op	       0 allocs/op
+BenchmarkCreateScope-4                      	11879060	        98.61 ns/op	     112 B/op	       2 allocs/op
+BenchmarkCreateScope-4                      	11783727	        98.70 ns/op	     112 B/op	       2 allocs/op
+BenchmarkCreateScope-4                      	11767101	        97.63 ns/op	     112 B/op	       2 allocs/op
+BenchmarkResolveSingletonParallel-4         	15072459	        79.24 ns/op	      16 B/op	       1 allocs/op
+BenchmarkResolveSingletonParallel-4         	15031858	        80.33 ns/op	      16 B/op	       1 allocs/op
+BenchmarkResolveSingletonParallel-4         	15100272	        79.53 ns/op	      16 B/op	       1 allocs/op
+BenchmarkResolveTransientParallel-4         	 8255784	       144.8 ns/op	      56 B/op	       3 allocs/op
+BenchmarkResolveTransientParallel-4         	 8262848	       145.1 ns/op	      56 B/op	       3 allocs/op
+BenchmarkResolveTransientParallel-4         	 8252396	       145.4 ns/op	      56 B/op	       3 allocs/op
+BenchmarkResolveScopedParallel-4            	17471204	        75.88 ns/op	      16 B/op	       1 allocs/op
+BenchmarkResolveScopedParallel-4            	15773002	        76.63 ns/op	      16 B/op	       1 allocs/op
+BenchmarkResolveScopedParallel-4            	17943892	        78.04 ns/op	      16 B/op	       1 allocs/op
+BenchmarkResolveWithDepsParallel-4          	 3765463	       319.4 ns/op	     144 B/op	       7 allocs/op
+BenchmarkResolveWithDepsParallel-4          	 3748669	       318.6 ns/op	     144 B/op	       7 allocs/op
+BenchmarkResolveWithDepsParallel-4          	 3752712	       318.8 ns/op	     144 B/op	       7 allocs/op
+BenchmarkContainerWithManyRegistrations-4   	  103826	     10847 ns/op	   10208 B/op	     106 allocs/op
+BenchmarkContainerWithManyRegistrations-4   	  111187	     10800 ns/op	   10208 B/op	     106 allocs/op
+BenchmarkContainerWithManyRegistrations-4   	  113468	     10713 ns/op	   10208 B/op	     106 allocs/op
+BenchmarkResolveFromLargeContainer-4        	13398297	        88.88 ns/op	      16 B/op	       1 allocs/op
+BenchmarkResolveFromLargeContainer-4        	12788198	        88.97 ns/op	      16 B/op	       1 allocs/op
+BenchmarkResolveFromLargeContainer-4        	13290085	        88.37 ns/op	      16 B/op	       1 allocs/op
 PASS
-ok  	github.com/pegasusheavy/go-dependency-injector/di	91.399s
+ok  	github.com/pegasusheavy/go-dependency-injector/di	91.945s
 ```
 
 </details>
