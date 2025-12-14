@@ -22,7 +22,7 @@ linters-settings:
   errcheck:
     check-type-assertions: false  # Type assertions are common in generic code
     check-blank: false  # Allow blank identifier for deliberate error ignoring
-  
+
   govet:
     enable:
       - atomic
@@ -52,7 +52,7 @@ linters-settings:
     disable:
       - fieldalignment  # Micro-optimization, not critical for correctness
       - shadow  # Can be overly strict
-  
+
   revive:
     rules:
       - name: exported

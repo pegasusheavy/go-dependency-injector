@@ -5,7 +5,16 @@ import (
 	"sync"
 )
 
-// Container is the dependency injection container.
+// Container is the dependency injection container that manages service registrations
+// and their resolution. It is thread-safe and can be used concurrently from multiple
+// goroutines.
+//
+// A Container maintains:
+//   - Registrations: Factory functions and metadata for creating instances
+//   - Singletons: Cached instances for singleton-scoped dependencies
+//   - Scopes: Named scopes for scoped dependency resolution
+//
+// Use [New] to create a new Container instance.
 type Container struct {
 	mu            sync.RWMutex
 	registrations map[registrationKey]*registration
@@ -15,6 +24,14 @@ type Container struct {
 }
 
 // New creates a new dependency injection container.
+//
+// The returned container is empty and ready for registrations. It is thread-safe
+// and can be safely shared across goroutines.
+//
+// Example:
+//
+//	container := di.New()
+//	di.Register[Logger](container, func() Logger { return &ConsoleLogger{} })
 func New() *Container {
 	return &Container{
 		registrations: make(map[registrationKey]*registration),
@@ -25,7 +42,32 @@ func New() *Container {
 }
 
 // Register registers a type with the container using a factory function.
-// The factory can have dependencies as parameters which will be auto-resolved.
+//
+// The factory function can take any number of parameters, which will be automatically
+// resolved from the container when the type is resolved. The factory must return
+// either a single value of type T, or (T, error) if initialization can fail.
+//
+// By default, registrations are transient (a new instance is created on each resolution).
+// Use [AsSingleton], [AsScoped], or [WithLifetime] options to change the lifetime.
+//
+// Returns an error if the factory signature is invalid (see [ErrInvalidFactory]).
+//
+// Example:
+//
+//	// Simple factory with no dependencies
+//	di.Register[Logger](c, func() Logger {
+//	    return &ConsoleLogger{}
+//	})
+//
+//	// Factory with auto-resolved dependencies
+//	di.Register[UserService](c, func(log Logger, repo UserRepository) UserService {
+//	    return &DefaultUserService{logger: log, repo: repo}
+//	})
+//
+//	// Factory that can return an error
+//	di.Register[*sql.DB](c, func(cfg Config) (*sql.DB, error) {
+//	    return sql.Open("postgres", cfg.DatabaseURL())
+//	}, di.AsSingleton())
 func Register[T any](c *Container, factory any, opts ...RegistrationOption) error {
 	var zero T
 	targetType := reflect.TypeOf(&zero).Elem()
@@ -55,6 +97,22 @@ func Register[T any](c *Container, factory any, opts ...RegistrationOption) erro
 }
 
 // RegisterInstance registers an existing instance as a singleton.
+//
+// Use this when you have a pre-created object that should be returned
+// whenever the type is resolved. The instance is always treated as a singleton.
+//
+// This is useful for:
+//   - Configuration objects created at startup
+//   - Shared resources like connection pools
+//   - Mock objects in tests
+//
+// Example:
+//
+//	config := &AppConfig{Port: 8080, Debug: true}
+//	di.RegisterInstance[Config](container, config)
+//
+//	// Later, resolving returns the same instance
+//	cfg := di.MustResolve[Config](container)
 func RegisterInstance[T any](c *Container, instance T, opts ...RegistrationOption) {
 	var zero T
 	targetType := reflect.TypeOf(&zero).Elem()
@@ -77,8 +135,22 @@ func RegisterInstance[T any](c *Container, instance T, opts ...RegistrationOptio
 	c.singletons[key] = instance
 }
 
-// RegisterType registers a concrete type that will be instantiated automatically.
-// The type must have a constructor function named New<TypeName> or accept struct injection.
+// RegisterType registers an interface to implementation type mapping.
+//
+// This creates a registration where resolving TInterface returns a new instance
+// of TImpl. The implementation type is instantiated using reflection.
+//
+// This is useful when the implementation has no constructor dependencies and
+// can be zero-value initialized, or when you want the container to create
+// instances automatically.
+//
+// Example:
+//
+//	// Register Logger interface to resolve as ConsoleLogger
+//	di.RegisterType[Logger, ConsoleLogger](container, di.AsSingleton())
+//
+//	// Now resolving Logger returns a *ConsoleLogger
+//	logger := di.MustResolve[Logger](container)
 func RegisterType[TInterface any, TImpl any](c *Container, opts ...RegistrationOption) error {
 	var zeroIface TInterface
 	var zeroImpl TImpl
@@ -112,11 +184,40 @@ func RegisterType[TInterface any, TImpl any](c *Container, opts ...RegistrationO
 }
 
 // Resolve resolves a dependency from the container.
+//
+// This returns the resolved instance of type T, or an error if resolution fails.
+// All dependencies of T are automatically resolved recursively.
+//
+// Possible errors:
+//   - [ErrNotRegistered]: The type T was not registered
+//   - [ErrCircularDependency]: A circular dependency was detected
+//   - [ErrResolutionFailed]: The factory or a dependency failed
+//
+// Example:
+//
+//	service, err := di.Resolve[UserService](container)
+//	if err != nil {
+//	    log.Fatal(err)
+//	}
+//	service.DoSomething()
 func Resolve[T any](c *Container) (T, error) {
 	return ResolveNamed[T](c, "")
 }
 
 // ResolveNamed resolves a named dependency from the container.
+//
+// Use this when multiple implementations of the same interface are registered
+// with different names using [WithName].
+//
+// Example:
+//
+//	// Registration
+//	di.Register[Logger](c, consoleFactory, di.WithName("console"))
+//	di.Register[Logger](c, fileFactory, di.WithName("file"))
+//
+//	// Resolution by name
+//	consoleLogger, err := di.ResolveNamed[Logger](c, "console")
+//	fileLogger, err := di.ResolveNamed[Logger](c, "file")
 func ResolveNamed[T any](c *Container, name string) (T, error) {
 	var zero T
 	targetType := reflect.TypeOf(&zero).Elem()
@@ -130,6 +231,22 @@ func ResolveNamed[T any](c *Container, name string) (T, error) {
 }
 
 // MustResolve resolves a dependency or panics if it fails.
+//
+// Use this when you're certain the type is registered and resolution will succeed,
+// such as during application startup after all registrations are complete.
+//
+// This is equivalent to:
+//
+//	result, err := di.Resolve[T](c)
+//	if err != nil {
+//	    panic(err)
+//	}
+//	return result
+//
+// Example:
+//
+//	// Safe to use after startup when you know types are registered
+//	service := di.MustResolve[UserService](container)
 func MustResolve[T any](c *Container) T {
 	result, err := Resolve[T](c)
 	if err != nil {
@@ -139,6 +256,14 @@ func MustResolve[T any](c *Container) T {
 }
 
 // MustResolveNamed resolves a named dependency or panics if it fails.
+//
+// This is the panic-on-error variant of [ResolveNamed]. Use when you're certain
+// the named registration exists.
+//
+// Example:
+//
+//	// Safe to use when you know the named registration exists
+//	logger := di.MustResolveNamed[Logger](container, "console")
 func MustResolveNamed[T any](c *Container, name string) T {
 	result, err := ResolveNamed[T](c, name)
 	if err != nil {
@@ -147,7 +272,26 @@ func MustResolveNamed[T any](c *Container, name string) T {
 	return result
 }
 
-// CreateScope creates a new resolution scope.
+// CreateScope creates a new resolution scope for scoped dependencies.
+//
+// Scopes are useful for request-scoped dependencies in web applications.
+// Dependencies registered with [AsScoped] will return the same instance
+// when resolved within the same scope.
+//
+// The scope name should be unique (e.g., a request ID). Creating a scope
+// with the same name as an existing scope will replace the old scope.
+//
+// Example:
+//
+//	// In an HTTP handler
+//	func handler(w http.ResponseWriter, r *http.Request) {
+//	    scope := container.CreateScope("request-" + r.Header.Get("X-Request-ID"))
+//
+//	    // Same instance within this request
+//	    ctx1, _ := di.ResolveInScope[*RequestContext](container, scope)
+//	    ctx2, _ := di.ResolveInScope[*RequestContext](container, scope)
+//	    // ctx1 == ctx2
+//	}
 func (c *Container) CreateScope(name string) *Scope {
 	c.mu.Lock()
 	defer c.mu.Unlock()
@@ -158,6 +302,17 @@ func (c *Container) CreateScope(name string) *Scope {
 }
 
 // ResolveInScope resolves a dependency within a specific scope.
+//
+// For scoped dependencies (registered with [AsScoped]), the same instance
+// is returned for all resolutions within the same scope. Singleton and
+// transient dependencies behave normally.
+//
+// Example:
+//
+//	di.Register[*RequestContext](c, newRequestContext, di.AsScoped())
+//
+//	scope := container.CreateScope("request-123")
+//	ctx, err := di.ResolveInScope[*RequestContext](container, scope)
 func ResolveInScope[T any](c *Container, scope *Scope) (T, error) {
 	var zero T
 	targetType := reflect.TypeOf(&zero).Elem()
@@ -305,12 +460,29 @@ func validateFactory(targetType reflect.Type, factory any) error {
 	return nil
 }
 
-// Has checks if a type is registered.
+// Has checks if a type is registered in the container.
+//
+// This only checks for unnamed registrations. Use [HasNamed] to check
+// for named registrations.
+//
+// Example:
+//
+//	if di.Has[Logger](container) {
+//	    logger := di.MustResolve[Logger](container)
+//	    logger.Log("Logger is available")
+//	}
 func Has[T any](c *Container) bool {
 	return HasNamed[T](c, "")
 }
 
-// HasNamed checks if a named type is registered.
+// HasNamed checks if a named type is registered in the container.
+//
+// Example:
+//
+//	if di.HasNamed[Logger](container, "file") {
+//	    fileLogger := di.MustResolveNamed[Logger](container, "file")
+//	    // Use file logger
+//	}
 func HasNamed[T any](c *Container, name string) bool {
 	var zero T
 	targetType := reflect.TypeOf(&zero).Elem()
@@ -323,7 +495,21 @@ func HasNamed[T any](c *Container, name string) bool {
 	return exists
 }
 
-// Clear removes all registrations and cached instances.
+// Clear removes all registrations, cached singletons, and scopes from the container.
+//
+// After calling Clear, the container is empty and new registrations must be made
+// before resolving any dependencies.
+//
+// This is useful in testing scenarios where you want to reset the container
+// between tests.
+//
+// Example:
+//
+//	func TestSomething(t *testing.T) {
+//	    container := di.New()
+//	    // ... setup and test ...
+//	    container.Clear() // Reset for next test
+//	}
 func (c *Container) Clear() {
 	c.mu.Lock()
 	defer c.mu.Unlock()

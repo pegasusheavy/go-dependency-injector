@@ -40,3 +40,4 @@ jobs:
       run: |
         curl "https://proxy.golang.org/github.com/pegasusheavy/go-dependency-injector/@v/${{ github.ref_name }}.info" || true
 
+
