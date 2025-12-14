@@ -5,7 +5,9 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Go Version](https://img.shields.io/github/go-mod/go-version/pegasusheavy/go-dependency-injector)](https://github.com/pegasusheavy/go-dependency-injector)
 
-A lightweight, type-safe dependency injection container for Go, leveraging generics for compile-time safety and a clean, intuitive API.
+A lightweight, type-safe **dependency injection (DI) container** and **IoC (Inversion of Control)** framework for Go. This service container leverages Go generics for compile-time safety, automatic constructor injection, and a clean, intuitive API.
+
+**Keywords**: dependency injection, DI, IoC, inversion of control, service container, service locator, dependency container, golang DI, go dependency injection, constructor injection
 
 ## Features
 
@@ -427,6 +429,17 @@ git push origin v1.0.0
 - [uber-go/dig](https://github.com/uber-go/dig) - Reflection-based DI framework
 - [google/wire](https://github.com/google/wire) - Compile-time DI code generator
 - [samber/do](https://github.com/samber/do) - Generic-based DI container
+
+## Search Terms
+
+If you're looking for any of these, you've found the right package:
+
+- **Dependency Injection in Go** / **Golang DI** - This package provides full DI support
+- **IoC Container for Go** / **Inversion of Control** - Implements the IoC pattern
+- **Service Container** / **Service Locator** - Acts as a service container for your application
+- **Constructor Injection** - Automatically injects dependencies via constructor functions
+- **Lifetime Management** - Supports Transient, Singleton, and Scoped lifetimes
+- **Interface-based DI** - Designed for programming to interfaces
 
 ## FAQ
 

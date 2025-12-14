@@ -1,7 +1,10 @@
-// Package di provides a lightweight, type-safe dependency injection container for Go.
+// Package di provides a lightweight, type-safe dependency injection (DI) container
+// for Go applications, implementing the Inversion of Control (IoC) pattern.
 //
-// This package leverages Go generics (1.22+) for compile-time type safety while
-// providing a clean, intuitive API for managing application dependencies.
+// This package is a service container that leverages Go generics (1.22+) for
+// compile-time type safety while providing a clean, intuitive API for managing
+// application dependencies. It supports constructor injection, interface-based
+// design, and automatic dependency resolution.
 //
 // # Features
 //
